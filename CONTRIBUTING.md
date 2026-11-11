@@ -4,7 +4,7 @@
 2. Call `SE.register({...})` using the schema below.
 3. Reload the page and open the browser console. The registry warns about unknown node ids or packet kinds.
 
-Domains are defined in `js/registry.js` (`web`, `api`, `network`, `identity`, `crypto`, `cloud`, `threats`, `defense`, `ai`). A topic stays hidden on the site until it has at least one module.
+Domains are defined in `js/registry.js` (`web`, `api`, `network`, `identity`, `crypto`, `cloud`, `threats`, `defense`, `soc`, `ai`). A topic stays hidden on the site until it has at least one module.
 
 Add 3 quiz questions for each new module in `js/quizzes.js` (`[question, [options], correctIndex, explanation]`), and any new terms to `js/glossary.js`.
 

@@ -248,4 +248,58 @@ SE.quizzes = {
     ['When should a human approve an AI action?', ['For high-impact actions like sharing, paying or deleting', 'Never', 'For every single message'], 0, 'Approvals belong where mistakes are costly.'],
     ['Why log prompts, tool calls and decisions?', ['To investigate incidents and improve rules', 'To train ads', 'It\'s not needed'], 0, 'Audit trails show what led to each action.'],
   ],
+
+  /* ---- Identity & Access ---- */
+  'oauth-pkce': [
+    ['What does PKCE protect against?', ['A stolen authorization code being redeemed by another app', 'Weak passwords', 'Expired certificates'], 0, 'Without the original code_verifier, an intercepted code can\'t be exchanged for tokens.'],
+    ['Why does the app send a random `state` value?', ['To stop an attacker slipping their own login into the user\'s session (login CSRF)', 'To pick the token format', 'To speed up the redirect'], 0, 'The app only accepts a callback whose state matches what it sent.'],
+    ['Which grant is recommended for single-page and mobile apps today?', ['Authorization code with PKCE', 'Implicit grant', 'Password grant'], 0, 'Implicit and password grants are deprecated by current best practice.'],
+  ],
+  'saml-sso': [
+    ['What makes a SAML assertion trustworthy to the app?', ['The IdP\'s digital signature, checked against a pinned certificate', 'It arrives over POST', 'It is XML'], 0, 'Without a correct signature check, anyone could write an assertion.'],
+    ['Why check the Audience element?', ['To make sure the assertion was issued for this app, not another one', 'To find the user\'s email', 'To choose the binding'], 0, 'An assertion meant for a different app must not be accepted.'],
+    ['What is the safest way to implement SAML in an app?', ['Use a well-maintained SAML library', 'Write your own XML signature parser', 'Skip signature checks behind a VPN'], 0, 'Most SAML bypasses come from hand-rolled or misconfigured validation.'],
+  ],
+  kerberos: [
+    ['What does a user receive from the KDC at logon?', ['A ticket-granting ticket (TGT)', 'Their password hash', 'A TLS certificate'], 0, 'The TGT is later traded for service tickets.'],
+    ['Does the file server contact the domain controller to check a service ticket?', ['No, it decrypts the ticket with its own key', 'Yes, every time', 'Only for admins'], 0, 'That\'s what makes Kerberos efficient.'],
+    ['Which control best protects service accounts from offline cracking of their tickets?', ['Long random passwords or gMSA, with AES only', 'Shorter ticket lifetimes alone', 'Turning off logging'], 0, 'Strong keys make captured tickets useless to crack.'],
+  ],
+  'mfa-fatigue': [
+    ['What does a burst of MFA denials for one user tell you?', ['Their password is probably known to an attacker', 'Their phone is broken', 'Nothing important'], 0, 'Prompts only appear after the password step succeeds.'],
+    ['How does number matching help?', ['The user must type a number only visible on the real sign-in screen', 'It blocks all logins at night', 'It hides the app name'], 0, 'A prompt someone else triggered can\'t be approved by accident.'],
+    ['Which MFA type makes push bombing impossible?', ['Phishing-resistant MFA like passkeys or FIDO2 keys', 'SMS codes', 'Security questions'], 0, 'There is no remote prompt to spam.'],
+  ],
+  'pam-jit': [
+    ['What does "zero standing access" mean?', ['No one keeps permanent admin rights; access is granted when needed and expires', 'Admins share one password', 'Nobody can ever be an admin'], 0, 'Time-boxed access leaves attackers little to steal.'],
+    ['Why does the broker inject the credential instead of showing it?', ['So the admin never sees or copies the password', 'To make logins faster', 'Because passwords are optional'], 0, 'And the password is rotated after the session.'],
+    ['Which alert is a strong sign of a stolen admin credential?', ['An admin login that didn\'t go through the PAM broker', 'A request approved by a manager', 'A recorded session'], 0, 'Legitimate admin access should always be brokered.'],
+  ],
+
+  /* ---- Security Operations ---- */
+  'phishing-triage': [
+    ['Why did SPF pass on the phishing email?', ['It was sent from the attacker\'s own lookalike domain', 'SPF was broken', 'The email came from Microsoft'], 0, 'SPF only proves the server may send for that domain, not that the domain is legitimate.'],
+    ['How should an analyst check a suspicious link?', ['In an isolated sandbox', 'By clicking it on their laptop', 'By forwarding it to colleagues'], 0, 'Detonation in a sandbox keeps the analyst and network safe.'],
+    ['After confirming a phish, what should happen to the other copies?', ['Find and purge every copy from all mailboxes', 'Leave them; users will ignore them', 'Delete only the reported one'], 0, 'Scope first, then clean up everywhere.'],
+  ],
+  'edr-detection': [
+    ['Why was the Excel → PowerShell chain suspicious?', ['Office apps rarely need to start encoded script interpreters', 'PowerShell is always malware', 'Excel files can\'t have macros'], 0, 'Behaviour, not a known-bad file, triggered the alert.'],
+    ['What does host isolation do?', ['Cuts the device off the network except for the EDR console', 'Deletes all files', 'Shuts the device down'], 0, 'The attacker loses access while the analyst can still investigate.'],
+    ['What was the program trying to do by reading LSASS memory?', ['Steal logon credentials', 'Update Windows', 'Print a document'], 0, 'LSASS holds logon secrets, so access to it is closely watched.'],
+  ],
+  'incident-response': [
+    ['Which phase comes right after detection and analysis?', ['Containment', 'Lessons learned', 'Preparation'], 0, 'Stop the spread before the full clean-up.'],
+    ['Why preserve memory and disk before reimaging?', ['Evidence is lost once the system is wiped', 'It makes the server faster', 'It is required by DNS'], 0, 'You need it to understand scope and root cause.'],
+    ['What made recovery possible without paying anyone?', ['Immutable backups the attacker couldn\'t reach', 'Antivirus', 'Turning the server off and on'], 0, 'Offline or immutable, tested backups are the ransomware safety net.'],
+  ],
+  'threat-hunting': [
+    ['What does a threat hunt start with?', ['A hypothesis about attacker behaviour', 'An existing alert', 'A random IP list'], 0, 'Hunting looks for what alerts haven\'t caught.'],
+    ['Which two signals pointed to beaconing?', ['A rare domain contacted at very regular intervals', 'Large downloads during work hours', 'Many users visiting a news site'], 0, 'Implants on timers are regular; people are not.'],
+    ['What should a successful hunt produce besides an incident?', ['A new automatic detection', 'Nothing else', 'A firewall reboot'], 0, 'So the same thing is caught automatically next time.'],
+  ],
+  'soar-playbook': [
+    ['What does a SOAR playbook usually do first?', ['Enrich the alert with lookups', 'Disable every account', 'Delete the alert'], 0, 'Context makes the decision fast and consistent.'],
+    ['Which actions should need human approval?', ['High-impact or disruptive ones', 'All lookups', 'None at all'], 0, 'Automation is great for low-risk steps; people decide the big ones.'],
+    ['Why test playbooks regularly?', ['A changed API or permission can silently break them', 'To use more storage', 'It is not needed'], 0, 'A broken playbook can fail quietly when you need it.'],
+  ],
 };

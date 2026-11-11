@@ -109,7 +109,7 @@ def write(path, content):
 
 
 routes = []  # (path, title, description, indexable, structured data)
-home_desc = 'Interactive, step-by-step walkthroughs of how web, API, network, crypto and AI attacks work, and how to defend against them.'
+home_desc = 'Interactive, step-by-step walkthroughs of how web, API, network, identity, crypto and AI attacks work, how SOC teams respond,, and how to defend against them.'
 routes.append(('/modules/', 'Modules', f'{len(modules)} interactive walkthroughs of attacks, protocols and defenses. Pick one and press play.', True, None))
 for d in domains:
     routes.append((f"/modules/{d['id']}/", d['name'], plain(d['blurb']), True, None))
