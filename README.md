@@ -54,6 +54,7 @@ The site ships with a strict Content-Security-Policy (no inline scripts, no thir
 
 | Topic | Modules |
 | --- | --- |
+| Internet Protocols | 16 |
 | Web Application Security | 8 |
 | API Security | 5 |
 | Network Security | 5 |

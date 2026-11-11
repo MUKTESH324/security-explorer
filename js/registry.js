@@ -4,6 +4,8 @@
  */
 window.SE = (() => {
   const domains = [
+    { id: 'protocols', name: 'Internet Protocols', short: 'Protocols', icon: 'dns',
+      blurb: 'How the internet actually works: DNS, TCP, HTTP, SSH, email and more, message by message, with the security notes for each.' },
     { id: 'web', name: 'Web Application Security', short: 'Web', icon: 'browser',
       blurb: 'How web apps get broken: injection, XSS, CSRF, SSRF, access-control flaws and how to fix them.' },
     { id: 'api', name: 'API Security', short: 'API', icon: 'api',
@@ -36,6 +38,12 @@ window.SE = (() => {
 
   // Curated, ordered tracks. Module ids that don't exist yet are skipped automatically.
   const paths = [
+    { id: 'networking', level: 'Beginner', title: 'Networking fundamentals',
+      desc: 'What happens between typing a URL and seeing a page: switching, addressing, routing, transport, names and the web.',
+      modules: ['ethernet', 'dhcp', 'ip-routing', 'icmp', 'tcp', 'udp', 'dns', 'http', 'tls13'] },
+    { id: 'app-protocols', level: 'Beginner', title: 'Everyday application protocols',
+      desc: 'The protocols behind email, remote access, file transfer, real-time apps, clocks and internet routing.',
+      modules: ['smtp', 'imap', 'ssh', 'ftp', 'websocket', 'quic', 'ntp', 'bgp'] },
     { id: 'web-fundamentals', level: 'Beginner', title: 'Web application fundamentals',
       desc: 'The bugs behind most web breaches, from injection to broken access control. Start here if you build or test websites.',
       modules: ['sqli', 'xss-reflected', 'xss-stored', 'csrf', 'idor', 'path-traversal', 'cmdi', 'ssrf'] },
