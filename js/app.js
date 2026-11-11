@@ -8,7 +8,6 @@
   const fmt = (s) => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
   const NS = 'http://www.w3.org/2000/svg';
   const SITE = CFG.siteName || 'Security Explorer';
-  const REPO = String(CFG.repoUrl || '').replace(/\/+$/, '');
   const EVIL = new Set(['attacker', 'c2']);
   const GOOD = new Set(['shield', 'ids', 'siem', 'gateway']);
   const KIND_NAME = { attack: 'Attack', protocol: 'How it works', defense: 'Defense' };
@@ -283,11 +282,7 @@
         <p>IP addresses and domains in the examples come from ranges reserved for documentation, so they don't point at anyone's real systems.</p>
 
         <h2>Privacy</h2>
-        <p>No accounts, analytics, ads or cookies. The only thing stored is your light/dark theme choice, in your own browser.</p>
-
-        <h2>Contributing</h2>
-        <p>Modules are plain JavaScript data files, so adding one doesn't need a build setup. ${REPO ? `See the <a href="${esc(REPO)}/blob/main/CONTRIBUTING.md" ${ext}>contributor guide</a>, or <a href="${esc(REPO)}/issues/new" ${ext}>report a mistake</a>.` : 'See <code>CONTRIBUTING.md</code> in the source for the format.'} Corrections are just as welcome as new modules.</p>
-      </article>`;
+        <p>No accounts, analytics, ads or cookies. The only thing stored is your light/dark theme choice, in your own browser.</p>      </article>`;
   }
 
   const notFoundHTML = () => `
@@ -572,10 +567,6 @@
     $('#kbdHint').textContent = isMac() ? '⌘K' : 'Ctrl K';
     $('#year').textContent = new Date().getFullYear();
     $('#footerTopics').innerHTML = LIVE.map((d) => `<a href="#/modules/${d.id}">${esc(d.name)}</a>`).join('');
-    if (REPO) {
-      $$('[data-repo]').forEach((a) => { a.href = REPO + a.dataset.repo; a.target = '_blank'; a.rel = 'noopener'; a.hidden = false; });
-      $('#footerProject').hidden = false;
-    }
   }
 
   /* ---------- events ---------- */

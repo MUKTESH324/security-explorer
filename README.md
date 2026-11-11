@@ -19,10 +19,6 @@ python3 -m http.server 8000
 
 Then open http://localhost:8000.
 
-## Before you go live
-
-Open `js/config.js` and set `repoUrl` to your public GitHub repository. That turns on the GitHub link in the header and the Source / Write a module / Report a problem links in the footer. Leave it empty to hide them.
-
 ## Deploy for free
 
 There's no build step: the repository root *is* the website.
@@ -49,7 +45,7 @@ The site ships with a strict Content-Security-Policy (no inline scripts, no thir
 | --- | --- |
 | `index.html` | Page shell: header, explorer, footer, search |
 | `css/style.css` | All styles; light and dark themes via CSS variables |
-| `js/config.js` | Site settings (name, repository link) |
+| `js/config.js` | Site settings (site name) |
 | `js/registry.js` | Topics, learning paths and packet colour categories |
 | `js/modules/*.js` | One file per topic; each module is a data object |
 | `js/app.js` | Routing, pages, diagram animation, playback |

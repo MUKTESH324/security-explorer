@@ -82,8 +82,9 @@ kbd { font-size: 11px; color: var(--muted); border: 1px solid var(--border-stron
 .site-header { position: sticky; top: 0; z-index: 30; background: color-mix(in srgb, var(--bg) 85%, transparent); backdrop-filter: saturate(1.4) blur(12px); border-bottom: 1px solid var(--border); }
 .header-inner { display: flex; align-items: center; gap: 28px; height: 60px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--text); font-weight: 650; font-size: 16px; letter-spacing: -0.01em; text-decoration: none !important; white-space: nowrap; }
-.brand-mark { width: 26px; height: 26px; fill: none; stroke: var(--accent); stroke-width: 2.4; }
-.brand-mark .dot { fill: var(--accent); stroke: none; }
+.brand-mark { width: 28px; height: 28px; flex: none; fill: none; stroke: var(--accent); stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; }
+.brand-mark .a { stroke-width: 4; }
+.brand-mark circle { fill: var(--accent); stroke: none; }
 .main-nav { display: flex; gap: 4px; }
 .main-nav a { color: var(--muted); font-size: 14px; font-weight: 500; padding: 6px 10px; border-radius: 6px; text-decoration: none; }
 .main-nav a:hover { color: var(--text); background: var(--surface-2); }
@@ -354,7 +355,7 @@ tr.raw pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 12
 /* ===== Footer ===== */
 .site-footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 24px; font-size: 14px; }
 body[data-view="explorer"] .site-footer { margin-top: 0; }
-.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1.3fr 1fr; gap: 32px; padding-top: 44px; padding-bottom: 32px; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1.3fr; gap: 32px; padding-top: 44px; padding-bottom: 32px; }
 .footer-grid h3 { font-size: 13px; font-weight: 600; margin-bottom: 12px; }
 .footer-grid a:not(.brand) { display: block; color: var(--muted); padding: 3px 0; }
 .footer-grid a:not(.brand):hover { color: var(--text); }
