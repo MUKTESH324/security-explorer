@@ -386,6 +386,29 @@ tr.raw pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 12
 .gloss-see { display: block; margin-top: 6px; font-size: 13px; }
 .gloss-empty { margin-top: 20px; }
 
+/* ===== Contact ===== */
+.contact-form { display: grid; gap: 18px; margin-top: 8px; }
+.topic-pick { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.topic-pick legend { font-weight: 600; margin-bottom: 10px; padding: 0; }
+.chip-radio input { position: absolute; opacity: 0; pointer-events: none; }
+.chip-radio span { display: inline-flex; align-items: center; height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--muted); font-size: 14px; cursor: pointer; }
+.chip-radio input:checked + span { background: var(--text); border-color: var(--text); color: var(--bg); }
+.chip-radio input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.field { display: grid; gap: 6px; font-weight: 600; font-size: 14px; }
+.field small { font-weight: 400; color: var(--faint); }
+.field input, .field textarea { font: 15px/1.5 var(--sans); color: var(--text); background: var(--surface); border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 12px; width: 100%; }
+.field input:focus, .field textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+.field textarea { resize: vertical; min-height: 140px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.about-page { margin: 0; color: var(--muted); }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.form-foot { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.form-status { margin: 0; font-size: 14px; color: var(--muted); }
+.form-status.err { color: var(--k-atk); }
+.small { font-size: 13px; }
+.feedback-link { margin: 18px 0 0; font-size: 13px; }
+@media (max-width: 640px) { .field-row { grid-template-columns: 1fr; } }
+
 /* ===== Footer ===== */
 .site-footer { border-top: 1px solid var(--border); background: var(--surface); margin-top: 24px; font-size: 14px; }
 body[data-view="explorer"] .site-footer { margin-top: 0; }

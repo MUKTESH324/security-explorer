@@ -24,6 +24,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build a page per route, sitemap and robots.txt
         run: python3 scripts/build_pages.py .
+      - name: Keep only website files in the upload
+        run: rm -rf workers scripts .github
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

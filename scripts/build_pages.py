@@ -102,6 +102,7 @@ routes.append(('/paths/', 'Learning paths', 'Short, ordered sets of security mod
 for pid, ptitle in paths:
     routes.append((f'/paths/{pid}/', js_string(ptitle), 'A learning path on Security Explorer.', False, None))
 routes.append(('/glossary/', 'Glossary', 'Plain-language definitions of security and networking terms, with links to interactive walkthroughs.', True, None))
+routes.append(('/contact/', 'Contact', 'Send a question, suggest a new security topic, or report a mistake on Security Explorer.', True, None))
 routes.append(('/about/', 'About', 'What Security Explorer is, how to use a module, and how it handles your privacy.', True, None))
 for m in modules:
     desc = plain(m['summary'] or m['full'])
