@@ -25,7 +25,7 @@ window.SE = (() => {
     { id: 'soc', name: 'Security Operations (SOC)', short: 'SOC', icon: 'siem',
       blurb: 'How a security operations center works: phishing triage, EDR, incident response, threat hunting and automation.' },
     { id: 'ai', name: 'AI & LLM Security', short: 'AI', icon: 'ai',
-      blurb: 'How LLM apps and agents work, how prompt injection and unsafe output break them, and how to build guardrails.' },
+      blurb: 'How LLM apps, agents and MCP tool connections work, how prompt injection and unsafe output break them, and how to build guardrails.' },
   ];
 
   // Packet colour categories used in the diagram, sequence view and table.
@@ -53,8 +53,8 @@ window.SE = (() => {
       desc: 'How a well-protected API call works, and the authorization and abuse problems that show up most in real APIs.',
       modules: ['api-gateway', 'idor', 'mass-assignment', 'bfla', 'api-rate-limit', 'webhook-hmac'] },
     { id: 'ai-apps', level: 'Intermediate', title: 'Building secure AI apps',
-      desc: 'How LLM apps and agents are put together, where prompt injection and unsafe output come in, and how to contain them.',
-      modules: ['rag-pipeline', 'prompt-injection', 'indirect-injection', 'llm-output', 'ai-guardrails'] },
+      desc: 'How LLM apps, agents and MCP servers are put together, where prompt injection and unsafe output come in, and how to contain them.',
+      modules: ['rag-pipeline', 'prompt-injection', 'indirect-injection', 'llm-output', 'mcp-protocol', 'mcp-tool-poisoning', 'ai-guardrails'] },
     { id: 'crypto', level: 'Beginner', title: 'Cryptography essentials',
       desc: 'What actually happens when you see the padlock, and how passwords should be stored.',
       modules: ['diffie-hellman', 'tls13', 'cert-chain', 'password-storage'] },
