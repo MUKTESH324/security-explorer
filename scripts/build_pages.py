@@ -9,6 +9,7 @@ Usage:  python3 scripts/build_pages.py [site_dir]
 Runs automatically in the GitHub Pages workflow before deploy. Output files
 are generated, not committed (see .gitignore).
 """
+import hashlib
 import html
 import json
 import pathlib
@@ -21,6 +22,20 @@ AUTHOR = 'Muktesh Adusumilli'
 
 root = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else '.').resolve()
 template = (root / 'index.html').read_text(encoding='utf-8')
+
+
+# Cache-busting: add ?v=<content hash> to local CSS/JS so browsers never mix a new page
+# with an old cached script after a deploy.
+def fingerprint(match):
+    attr, path = match.group(1), match.group(2)
+    f = root / path.lstrip('/')
+    if not f.is_file():
+        return match.group(0)
+    digest = hashlib.sha256(f.read_bytes()).hexdigest()[:10]
+    return f'{attr}="{path}?v={digest}"'
+
+
+template = re.sub(r'(src|href)="(/(?:js|css)/[^"?]+\.(?:js|css))(?:\?v=[0-9a-f]+)?"', fingerprint, template)
 # Safe to re-run: drop anything a previous build added to the shell.
 template = re.sub(r'\n<link rel="canonical" href="[^"]*">|\n<meta property="og:url" content="[^"]*">|\n<script type="application/ld\+json">.*?</script>', '', template, flags=re.S)
 
