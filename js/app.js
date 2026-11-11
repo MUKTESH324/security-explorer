@@ -103,6 +103,7 @@
       return;
     }
     if (a === 'about') return showPage(aboutHTML(), 'About', 'about');
+    if (a === 'contact') return showPage(contactHTML(), 'Contact', 'contact');
     if (a === 'm' && byId[b]) return openModule(byId[b], parseInt(c, 10) || 0);
     showPage(notFoundHTML(), 'Not found');
   }
@@ -323,8 +324,66 @@
         </ul>
         <p>IP addresses and domains in the examples come from ranges reserved for documentation, so they don't point at anyone's real systems.</p>
 
+        <h2>Get in touch</h2>
+        <p>Questions, ideas for new topics, or corrections are all welcome on the <a href="/contact">contact page</a>.</p>
+
         <h2>Privacy</h2>
         <p>No accounts, ads or cookies. Visits are counted anonymously with <a href="https://www.goatcounter.com/" ${ext}>GoatCounter</a>, which doesn't use cookies or collect personal data. Your theme choice, completed modules and quiz scores are saved only in your own browser, never sent anywhere.</p>      </article>`;
+  }
+
+  const CONTACT_TOPICS = ['Question', 'Suggest a topic', 'Report a mistake', 'Other'];
+  let contactStarted = 0;
+  function contactHTML() {
+    const q = new URLSearchParams(location.search);
+    const topic = CONTACT_TOPICS.includes(q.get('topic')) ? q.get('topic') : 'Question';
+    const page = (q.get('page') || '').slice(0, 200);
+    contactStarted = Date.now();
+    return `
+      <article class="prose contact">
+        <p class="crumbs-inline"><a href="/">Home</a> / <span>Contact</span></p>
+        <h1>Contact</h1>
+        <p class="lead">Questions, ideas for new modules, or a mistake you spotted: send a note and it goes straight to the person who runs the site.</p>
+        <form id="contactForm" class="contact-form" novalidate>
+          <fieldset class="topic-pick">
+            <legend>What's it about?</legend>
+            ${CONTACT_TOPICS.map((t) => `<label class="chip-radio"><input type="radio" name="topic" value="${esc(t)}"${t === topic ? ' checked' : ''}><span>${esc(t)}</span></label>`).join('')}
+          </fieldset>
+          ${page ? `<p class="about-page">About: <b>${esc(page)}</b><input type="hidden" name="page" value="${esc(page)}"></p>` : ''}
+          <label class="field"><span>Message</span>
+            <textarea name="message" rows="7" maxlength="5000" required placeholder="${topic === 'Report a mistake' ? 'Which step, and what looks wrong?' : 'Write your message'}"></textarea></label>
+          <div class="field-row">
+            <label class="field"><span>Name <small>(optional)</small></span><input name="name" maxlength="100" autocomplete="name"></label>
+            <label class="field"><span>Email <small>(optional, only if you'd like a reply)</small></span><input name="email" type="email" maxlength="200" autocomplete="email"></label>
+          </div>
+          <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+          <div class="form-foot">
+            <button class="btn primary" type="submit">Send message</button>
+            <p class="form-status" role="status" aria-live="polite"></p>
+          </div>
+          <p class="muted small">Messages are delivered by email and aren't published or shared. Your email address is only used to reply to you.</p>
+        </form>
+      </article>`;
+  }
+  async function submitContact(form) {
+    const status = form.querySelector('.form-status'), btn = form.querySelector('button[type="submit"]');
+    const fd = new FormData(form);
+    const data = Object.fromEntries(fd.entries());
+    data.t = contactStarted;
+    if ((data.message || '').trim().length < 10) { status.textContent = 'Please write at least a few words.'; status.className = 'form-status err'; form.message.focus(); return; }
+    if (data.email && !form.email.checkValidity()) { status.textContent = "That email address doesn't look right."; status.className = 'form-status err'; form.email.focus(); return; }
+    btn.disabled = true; status.textContent = 'Sending…'; status.className = 'form-status';
+    try {
+      const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      const out = await res.json().catch(() => ({}));
+      if (res.ok && out.ok) {
+        form.innerHTML = '<div class="box"><h2>Message sent</h2><p>Thanks for writing. If you left an email address, you\'ll get a reply there.</p></div>';
+        return;
+      }
+      status.textContent = out.error || "Your message couldn't be sent. Please try again later."; status.className = 'form-status err';
+    } catch (_) {
+      status.textContent = "Your message couldn't be sent. Check your connection and try again."; status.className = 'form-status err';
+    }
+    btn.disabled = false;
   }
 
   const notFoundHTML = () => `
@@ -448,7 +507,8 @@
         <button class="btn primary block" data-act="start" type="button">Start walkthrough</button>
         <h2 class="d-sub">Key facts</h2>
         <table class="kv">${(m.facts || []).map(([k, v]) => `<tr><th>${esc(k)}</th><td>${linkify(v)}</td></tr>`).join('')}</table>
-        ${m.defenses?.length ? `<div class="box"><h2>${DEF_TITLE[m.kind] || 'Defenses'}</h2><ul>${m.defenses.map((x) => `<li>${fmt(x)}</li>`).join('')}</ul></div>` : ''}`;
+        ${m.defenses?.length ? `<div class="box"><h2>${DEF_TITLE[m.kind] || 'Defenses'}</h2><ul>${m.defenses.map((x) => `<li>${fmt(x)}</li>`).join('')}</ul></div>` : ''}
+        ${feedbackLink(m)}`;
       return;
     }
     const s = m.steps[st.step], last = st.step === m.steps.length - 1;
@@ -462,8 +522,9 @@
       ${s.fields?.length ? `<table class="kv">${s.fields.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${fmt(v)}</td></tr>`).join('')}</table>` : ''}
       ${s.defend ? `<div class="box"><h2>Defender's note</h2><p>${fmt(s.defend)}</p></div>` : ''}
       ${last ? `${quiz ? `<button class="btn primary block" data-act="quiz" type="button">${best != null ? `Retake the quiz · best ${best}/${quiz.length}` : `Check your understanding · ${quiz.length} questions`}</button>` : ''}
-        <div class="d-actions"><button class="btn" data-act="overview" type="button">Review the defenses</button>${next ? `<a class="btn${quiz ? '' : ' primary'}" href="/m/${next.id}">Next: ${esc(next.name)}</a>` : ''}</div>` : ''}`;
+        <div class="d-actions"><button class="btn" data-act="overview" type="button">Review the defenses</button>${next ? `<a class="btn${quiz ? '' : ' primary'}" href="/m/${next.id}">Next: ${esc(next.name)}</a>` : ''}</div>${feedbackLink(m)}` : ''}`;
   }
+  const feedbackLink = (m) => `<p class="feedback-link"><a href="/contact?topic=${encodeURIComponent('Report a mistake')}&amp;page=${encodeURIComponent(m.name)}">Spotted a mistake or have an idea for this module?</a></p>`;
 
   function renderQuiz() {
     const m = st.mod, qs = SE.quizzes[m.id], z = st.quiz, el = $('#details');
@@ -673,6 +734,11 @@
   });
   $('#rows').addEventListener('keydown', (e) => {
     if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr.has-raw')) { e.preventDefault(); toggleRaw(e.target); }
+  });
+  document.addEventListener('submit', (e) => {
+    if (e.target.id !== 'contactForm') return;
+    e.preventDefault();
+    submitContact(e.target);
   });
   document.addEventListener('input', (e) => {
     if (e.target.id !== 'glossFilter') return;

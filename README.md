@@ -43,6 +43,16 @@ The site ships with a strict Content-Security-Policy (no inline scripts, no thir
 
 `scripts/build_pages.py` runs in the deploy workflow and writes a real page for every route (`/m/<id>/`, `/modules/<topic>/`, `/paths/`, `/about/`) with its own title, description and canonical link, plus `404.html`, `sitemap.xml` and `robots.txt`. These files are generated during deploy, not committed. To preview them locally, run it on a copy of the folder.
 
+## Contact form
+
+The Contact page posts to `/api/contact`, served by the Cloudflare Worker in `workers/contact/`. It checks the request (same-origin, size, honeypot field, minimum time on page) and emails the message through Cloudflare Email Routing. The destination inbox is a Worker secret, never stored in this repository.
+
+```bash
+cd workers/contact
+npx wrangler deploy
+npx wrangler secret put DESTINATION   # verified Email Routing destination address
+```
+
 ## Project layout
 
 | Path | What it is |
@@ -57,6 +67,7 @@ The site ships with a strict Content-Security-Policy (no inline scripts, no thir
 | `js/app.js` | Routing, pages, diagram animation, playback |
 | `scripts/build_pages.py` | Pre-builds one page per route, structured data and sitemap at deploy time |
 | `og-image.svg` / `og-image.png` | Link preview image (edit the SVG, re-export the PNG at 1200×630) |
+| `workers/contact/` | Cloudflare Worker behind the contact form (`/api/contact`), delivers messages via Email Routing |
 | `.well-known/security.txt` | How to report a security issue with the site (renew `Expires` yearly) |
 
 ## Content

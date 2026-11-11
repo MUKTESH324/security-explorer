@@ -1,0 +1,21 @@
+# Contact form Worker for securityexplorer.org
+# Deploy:  npx wrangler deploy        (from this folder)
+# Secret:  npx wrangler secret put DESTINATION   (the verified Email Routing inbox; never commit it)
+name = "security-explorer-contact"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+workers_dev = false
+preview_urls = false
+
+routes = [
+  { pattern = "securityexplorer.org/api/contact", zone_name = "securityexplorer.org" },
+]
+
+# Email Routing binding. With no destination_address here, the Worker may send to
+# any verified destination in the account; the actual address comes from the
+# DESTINATION secret so it stays out of this public repository.
+[[send_email]]
+name = "CONTACT"
+
+[observability]
+enabled = true
