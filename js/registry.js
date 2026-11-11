@@ -1,0 +1,79 @@
+/*
+ * Security Explorer — module registry.
+ * Every module file calls SE.register({...}). See CONTRIBUTING.md for the schema.
+ */
+window.SE = (() => {
+  const domains = [
+    { id: 'web', name: 'Web Application Security', short: 'Web', icon: 'browser',
+      blurb: 'How web apps get broken: injection, XSS, CSRF, SSRF, access-control flaws and how to fix them.' },
+    { id: 'api', name: 'API Security', short: 'API', icon: 'api',
+      blurb: 'Authorization gaps, mass assignment, missing limits and webhook spoofing, based on the OWASP API Top 10.' },
+    { id: 'network', name: 'Network Security', short: 'Network', icon: 'router',
+      blurb: 'Reconnaissance, spoofing, man-in-the-middle and denial-of-service on the wire.' },
+    { id: 'identity', name: 'Identity & Access', short: 'Identity', icon: 'idp',
+      blurb: 'OAuth, SAML, JWT and Kerberos: how login works and how attackers abuse it.' },
+    { id: 'crypto', name: 'Cryptography', short: 'Crypto', icon: 'lock',
+      blurb: 'TLS, key exchange, certificates and password storage, step by step.' },
+    { id: 'cloud', name: 'Cloud Security', short: 'Cloud', icon: 'cloud',
+      blurb: 'Metadata theft, exposed storage and IAM privilege escalation in the cloud.' },
+    { id: 'threats', name: 'Threats & Malware', short: 'Threats', icon: 'attacker',
+      blurb: 'Phishing, ransomware, command-and-control and software supply-chain attacks.' },
+    { id: 'defense', name: 'Defense & Blue Team', short: 'Defense', icon: 'shield',
+      blurb: 'WAFs, IDS, SIEM and Zero Trust: how defenders see and stop attacks.' },
+    { id: 'ai', name: 'AI & LLM Security', short: 'AI', icon: 'ai',
+      blurb: 'How LLM apps and agents work, how prompt injection and unsafe output break them, and how to build guardrails.' },
+  ];
+
+  // Packet colour categories used in the diagram, sequence view and table.
+  const kinds = {
+    req: { label: 'Request' },
+    res: { label: 'Response' },
+    ctl: { label: 'Handshake / control' },
+    atk: { label: 'Malicious' },
+    data: { label: 'Sensitive data' },
+    def: { label: 'Defense / blocked' },
+  };
+
+  // Curated, ordered tracks. Module ids that don't exist yet are skipped automatically.
+  const paths = [
+    { id: 'web-fundamentals', level: 'Beginner', title: 'Web application fundamentals',
+      desc: 'The bugs behind most web breaches, from injection to broken access control. Start here if you build or test websites.',
+      modules: ['sqli', 'xss-reflected', 'xss-stored', 'csrf', 'idor', 'path-traversal', 'cmdi', 'ssrf'] },
+    { id: 'apis', level: 'Beginner', title: 'Securing APIs',
+      desc: 'How a well-protected API call works, and the authorization and abuse problems that show up most in real APIs.',
+      modules: ['api-gateway', 'idor', 'mass-assignment', 'bfla', 'api-rate-limit', 'webhook-hmac'] },
+    { id: 'ai-apps', level: 'Intermediate', title: 'Building secure AI apps',
+      desc: 'How LLM apps and agents are put together, where prompt injection and unsafe output come in, and how to contain them.',
+      modules: ['rag-pipeline', 'prompt-injection', 'indirect-injection', 'llm-output', 'ai-guardrails'] },
+    { id: 'crypto', level: 'Beginner', title: 'Cryptography essentials',
+      desc: 'What actually happens when you see the padlock, and how passwords should be stored.',
+      modules: ['diffie-hellman', 'tls13', 'cert-chain', 'password-storage'] },
+    { id: 'network', level: 'Intermediate', title: 'Network attacks and detection',
+      desc: 'Reconnaissance, spoofing and denial of service on the wire, and how a sensor picks them up.',
+      modules: ['port-scan', 'arp-spoof', 'dns-spoof', 'syn-flood', 'evil-twin', 'ids'] },
+    { id: 'blue-team', level: 'Intermediate', title: 'Blue team basics',
+      desc: 'Controls and workflows defenders rely on every day, from the edge to the SOC.',
+      modules: ['waf', 'ids', 'siem', 'zero-trust'] },
+  ];
+
+  const modules = [];
+
+  function register(m) {
+    const ids = new Set(m.nodes.map((n) => n.id));
+    m.steps.forEach((s, i) => {
+      s.packets = (s.packets || []).map((p) =>
+        Array.isArray(p)
+          ? { f: p[0], t: p[1], proto: p[2], info: p[3], size: p[4], kind: p[5] || 'req', raw: p[6] }
+          : p
+      );
+      s.packets.forEach((p) => {
+        if (!ids.has(p.f) || !ids.has(p.t)) console.warn(`[${m.id}] step ${i + 1}: unknown node in packet`, p);
+        if (!kinds[p.kind]) console.warn(`[${m.id}] step ${i + 1}: unknown packet kind "${p.kind}"`);
+      });
+    });
+    if (modules.some((x) => x.id === m.id)) console.warn(`Duplicate module id "${m.id}"`);
+    modules.push(m);
+  }
+
+  return { domains, kinds, paths, modules, register };
+})();

@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Security Explorer</title>
+<meta name="description" content="Interactive, step-by-step walkthroughs of how web, API, network, crypto and AI attacks work, and how to defend against them.">
+<meta property="og:title" content="Security Explorer">
+<meta property="og:description" content="Step-by-step walkthroughs of real attacks, protocols and defenses.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0c0d10" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f7f7f8" media="(prefers-color-scheme: light)">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="js/theme.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header" id="siteHeader">
+  <div class="wrap header-inner">
+    <a href="#/" class="brand" aria-label="Security Explorer home">
+      <svg viewBox="0 0 32 32" class="brand-mark" aria-hidden="true"><circle cx="7" cy="16" r="4.5"/><circle cx="25" cy="16" r="4.5"/><path d="M11.5 16h9"/><circle cx="16" cy="16" r="2.2" class="dot"/></svg>
+      <span>Security Explorer</span>
+    </a>
+    <nav class="main-nav" id="mainNav" aria-label="Main">
+      <a href="#/modules" data-nav="modules">Modules</a>
+      <a href="#/paths" data-nav="paths">Learning paths</a>
+      <a href="#/about" data-nav="about">About</a>
+      <a href="#" class="repo-link" data-repo="" hidden>GitHub</a>
+    </nav>
+    <div class="header-actions">
+      <button id="searchBtn" class="search-trigger" type="button" aria-label="Search modules">
+        <svg viewBox="0 0 24 24" class="i"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <span>Search</span><kbd id="kbdHint">⌘K</kbd>
+      </button>
+      <button id="themeBtn" class="icon-btn" type="button" aria-label="Switch colour theme">
+        <svg viewBox="0 0 24 24" class="i sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg viewBox="0 0 24 24" class="i moon"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+      </button>
+      <button id="navToggle" class="icon-btn nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mainNav">
+        <svg viewBox="0 0 24 24" class="i"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div id="page" class="wrap page" hidden></div>
+
+  <section id="explorer" class="explorer" hidden>
+    <div class="explorer-bar">
+      <nav id="crumbs" class="crumbs" aria-label="Breadcrumb"></nav>
+      <button id="drawerBtn" class="btn" type="button">
+        <svg viewBox="0 0 24 24" class="i"><path d="M4 6h16M4 12h16M4 18h10"/></svg>All modules
+      </button>
+    </div>
+    <div class="explorer-grid">
+      <div class="panel stage">
+        <div class="stage-head">
+          <div class="seg" role="tablist" aria-label="Diagram view">
+            <button data-view="network" class="on" role="tab">Network</button>
+            <button data-view="sequence" role="tab">Sequence</button>
+          </div>
+          <ol id="stepper" class="stepper"></ol>
+        </div>
+        <div class="canvas">
+          <svg id="diagram" viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Network diagram"></svg>
+          <div id="seq" hidden></div>
+        </div>
+      </div>
+
+      <aside id="details" class="panel details" aria-live="polite"></aside>
+
+      <div class="panel flow">
+        <div class="flow-head">
+          <h2>Packets</h2>
+          <div id="legend" class="legend"></div>
+          <div class="controls">
+            <select id="speed" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
+            <button id="prevBtn" class="icon-btn" type="button" aria-label="Previous step"><svg viewBox="0 0 24 24" class="i"><path d="m15 6-6 6 6 6"/></svg></button>
+            <button id="playBtn" class="btn primary" type="button"></button>
+            <button id="stepBtn" class="btn" type="button">Next step</button>
+            <button id="resetBtn" class="icon-btn" type="button" aria-label="Restart"><svg viewBox="0 0 24 24" class="i"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v5h5"/></svg></button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>No.</th><th>Time</th><th>Source</th><th>Destination</th><th>Protocol</th><th>Info</th><th>Size</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div class="footer-about">
+      <a href="#/" class="brand">
+        <svg viewBox="0 0 32 32" class="brand-mark" aria-hidden="true"><circle cx="7" cy="16" r="4.5"/><circle cx="25" cy="16" r="4.5"/><path d="M11.5 16h9"/><circle cx="16" cy="16" r="2.2" class="dot"/></svg>
+        <span>Security Explorer</span>
+      </a>
+      <p>Interactive walkthroughs of how attacks, protocols and defenses work. Free to use. No account, no ads, no tracking.</p>
+    </div>
+    <div>
+      <h3>Learn</h3>
+      <a href="#/modules">All modules</a>
+      <a href="#/paths">Learning paths</a>
+      <a href="#/about">About</a>
+    </div>
+    <div>
+      <h3>Topics</h3>
+      <div id="footerTopics"></div>
+    </div>
+    <div id="footerProject" hidden>
+      <h3>Project</h3>
+      <a data-repo="" href="#">Source code</a>
+      <a data-repo="/blob/main/CONTRIBUTING.md" href="#">Write a module</a>
+      <a data-repo="/issues/new" href="#">Report a problem</a>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>© <span id="year">2026</span> Security Explorer contributors</span>
+    <span>For learning only. Test only systems you own or have written permission to test.</span>
+  </div>
+</footer>
+
+<div id="scrim" class="scrim" hidden></div>
+<aside id="drawer" class="drawer" aria-hidden="true" aria-label="All modules">
+  <div class="drawer-head">
+    <h2>Modules</h2>
+    <button id="closeDrawer" class="icon-btn" type="button" aria-label="Close"><svg viewBox="0 0 24 24" class="i"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div id="tabs" class="tabs"></div>
+  <div id="list" class="list"></div>
+</aside>
+
+<div id="palette" class="palette" hidden role="dialog" aria-modal="true" aria-label="Search modules">
+  <div class="palette-box">
+    <div class="palette-input">
+      <svg viewBox="0 0 24 24" class="i"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      <input id="palInput" type="text" placeholder="Search modules, e.g. XSS, CWE-79, TLS" autocomplete="off" spellcheck="false" aria-label="Search modules">
+      <kbd>Esc</kbd>
+    </div>
+    <ul id="palList" class="palette-list"></ul>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/registry.js"></script>
+<script src="js/modules/web.js"></script>
+<script src="js/modules/api.js"></script>
+<script src="js/modules/network.js"></script>
+<script src="js/modules/crypto.js"></script>
+<script src="js/modules/defense.js"></script>
+<script src="js/modules/ai.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
