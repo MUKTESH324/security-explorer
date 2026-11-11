@@ -126,27 +126,120 @@
     window.scrollTo(0, 0);
   }
 
+  const pageHero = (crumb, title, lead, extra = '') => `
+      <header class="page-hero bleed"><div class="wrap page-hero-in">
+        <p class="crumbs-inline">${crumb}</p>
+        <h1>${title}</h1>
+        ${lead ? `<p class="lead">${lead}</p>` : ''}${extra}
+      </div></header>`;
+
+  const siteStats = () => ({
+    modules: MODS.length,
+    topics: LIVE.length,
+    steps: MODS.reduce((a, m) => a + m.steps.length, 0),
+    questions: Object.values(SE.quizzes || {}).reduce((a, q) => a + q.length, 0),
+    terms: (SE.glossary || []).length,
+  });
+
+  const FAQ = [
+    ['Is Security Explorer really free?', 'Yes. Every module, quiz and learning path is free to use, with no account, no ads and no paywall.'],
+    ['Who is it for?', 'Students, developers, IT and SOC analysts, and anyone moving into security. Modules are tagged Beginner, Intermediate or Advanced so you can pick your level.'],
+    ['Do I need to install anything?', 'No. Everything runs in your browser, on desktop or phone. There is nothing to download and no lab to set up.'],
+    ['Is it safe to learn about attacks here?', 'Modules explain how attacks work conceptually and always finish with the defense. Use what you learn only on systems you own or have written permission to test.'],
+    ['How accurate is the content?', 'Modules follow public standards such as the OWASP Top 10, MITRE ATT&CK and the relevant RFCs, with references on every module. If you spot a mistake, the report link on each module sends it straight to us.'],
+    ['Can I suggest a topic?', 'Yes, please do. Use the contact page or the link at the end of any module.'],
+  ];
+
   function homeHTML() {
     const start = byId.sqli || MODS[0];
     const feat = byId.ssrf || start;
     const si = Math.min(2, feat.steps.length - 1);
-    const total = MODS.reduce((a, m) => a + m.steps.length, 0);
+    const s = siteStats();
+    const firstPath = SE.paths.find((p) => pathMods(p).length) || SE.paths[0];
     return `
-      <section class="hero">
-        <div class="hero-copy">
-          <h1>Security concepts, one packet at a time.</h1>
-          <p class="lead">Step-by-step walkthroughs of real attacks, protocols and defenses. Each module shows who sends what to whom, explains why it works, and finishes with how to fix it.</p>
-          <div class="hero-actions">
-            <a class="btn primary lg" href="/modules">Browse modules</a>
-            <a class="btn lg" href="/m/${start.id}">Try ${esc(start.name)}</a>
+      <section class="hero-band bleed">
+        <div class="wrap hero">
+          <div class="hero-copy">
+            <p class="pill">Free · ${s.modules} interactive modules · No sign-up</p>
+            <h1>Security concepts, one packet at a time.</h1>
+            <p class="lead">Step-by-step walkthroughs of real attacks, protocols and defenses. See who sends what to whom, understand why it works, and learn how to stop it.</p>
+            <div class="hero-actions">
+              <a class="btn primary lg" href="/modules">Browse modules</a>
+              <a class="btn lg" href="/m/${start.id}">Try ${esc(start.name)}</a>
+            </div>
           </div>
-          <p class="hero-note">${MODS.length} modules and ${total} steps across ${LIVE.length} topics. Nothing to install, no sign-up.</p>
+          <a class="preview" href="/m/${feat.id}/${si + 1}">
+            <div class="preview-top"><span class="dots"><i></i><i></i><i></i></span><span>${esc(feat.name)}</span></div>
+            ${previewSVG(feat, si)}
+            <div class="preview-cap"><span>Step ${si + 1} of ${feat.steps.length}</span><b>${esc(feat.steps[si].title)}</b></div>
+          </a>
         </div>
-        <a class="preview" href="/m/${feat.id}/${si + 1}">
-          <div class="preview-top"><span class="dots"><i></i><i></i><i></i></span><span>${esc(feat.name)}</span></div>
-          ${previewSVG(feat, si)}
-          <div class="preview-cap"><span>Step ${si + 1} of ${feat.steps.length}</span><b>${esc(feat.steps[si].title)}</b></div>
-        </a>
+      </section>
+
+      <section class="standards" aria-label="Frameworks the content follows">
+        <span class="standards-label">Content aligned with</span>
+        <ul>
+          <li>OWASP Top 10</li><li>OWASP API Security</li><li>OWASP Top 10 for LLMs</li>
+          <li>MITRE ATT&amp;CK</li><li>MITRE ATLAS</li><li>MITRE CWE</li><li>NIST</li><li>IETF RFCs</li>
+        </ul>
+      </section>
+
+      <section class="stats-band">
+        <div class="stat"><b>${s.modules}</b><span>Interactive modules</span></div>
+        <div class="stat"><b>${s.topics}</b><span>Security topics</span></div>
+        <div class="stat"><b>${s.questions}</b><span>Quiz questions</span></div>
+        <div class="stat"><b>${s.terms}</b><span>Glossary terms</span></div>
+      </section>
+
+      <section class="section features">
+        <div class="section-intro">
+          <p class="eyebrow">How you learn</p>
+          <h2>See it happen, then understand why</h2>
+          <p class="lead">Every module combines a live diagram, plain-language explanations and a quick check, so concepts actually stick.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature">
+            <div class="mock mock-table" aria-hidden="true">
+              <div class="mt-row k-req"><span class="no">1</span><span class="proto">HTTP</span><span>GET /products?id=7</span></div>
+              <div class="mt-row k-atk"><span class="no">2</span><span class="proto">HTTP</span><span>GET /products?id=7'</span></div>
+              <div class="mt-row k-data"><span class="no">3</span><span class="proto">MySQL</span><span>ERROR 1064: syntax error…</span></div>
+              <div class="mt-row k-def"><span class="no">4</span><span class="proto">MySQL</span><span>PREPARE … WHERE id = ?</span></div>
+            </div>
+            <h3>Watch every packet</h3>
+            <p>Follow each message across a network or sequence diagram, then open the packet table to see the real request or payload.</p>
+          </article>
+          <article class="feature">
+            <div class="mock mock-step" aria-hidden="true">
+              <span class="eyebrow">Step 2 of 4</span>
+              <b>Probing with a quote</b>
+              <i class="ln"></i><i class="ln short"></i>
+              <div class="mock-box">Defender's note: never show database errors to users.</div>
+            </div>
+            <h3>Plain-language steps</h3>
+            <p>Each step explains what is happening and why it matters, with the key fields and a defender's note where it counts.</p>
+          </article>
+          <article class="feature">
+            <div class="mock mock-quiz" aria-hidden="true">
+              <b>What actually fixes SQL injection?</b>
+              <span class="opt">A WAF</span>
+              <span class="opt right">Parameterized queries ✓</span>
+              <span class="opt">Hiding error messages</span>
+            </div>
+            <h3>Check your understanding</h3>
+            <p>A short quiz closes every module, with an explanation for each answer and your best score remembered.</p>
+          </article>
+          <article class="feature">
+            <div class="mock mock-progress" aria-hidden="true">
+              <span class="eyebrow">${esc(firstPath ? firstPath.title : 'Learning path')}</span>
+              <div class="progress"><span style="width:56%"></span></div>
+              <span class="mp-row done">✓ Ethernet &amp; Switching</span>
+              <span class="mp-row done">✓ DHCP</span>
+              <span class="mp-row">IP Routing &amp; Traceroute</span>
+            </div>
+            <h3>Learning paths and progress</h3>
+            <p>Follow curated paths from networking basics to AI security. Your progress is saved privately in your own browser.</p>
+          </article>
+        </div>
       </section>
 
       <section class="section">
@@ -159,15 +252,19 @@
         <div class="topics">${LIVE.map(topicRow).join('')}</div>
       </section>
 
-      <section class="section split">
-        <div>
-          <h2>How a module works</h2>
-          <p>Press play and watch the exchange happen on a network diagram, or switch to a sequence diagram. The side panel explains each step in plain language, and the packet table below works like a simplified Wireshark: click a row marked “payload” to see what was actually sent.</p>
-          <p>Every attack ends on the fix, with links to the matching CWE, OWASP and MITRE entries so you can go deeper.</p>
+      <section class="section faq-section">
+        <div class="section-intro"><p class="eyebrow">FAQ</p><h2>Common questions</h2></div>
+        <div class="faq">${FAQ.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</div>
+      </section>
+
+      <section class="cta-band bleed">
+        <div class="wrap cta-in">
+          <div><h2>Start with the fundamentals</h2><p>Begin with how networks really work, then move on to attacks and defenses.</p></div>
+          <div class="hero-actions">
+            <a class="btn primary lg" href="/paths/${firstPath ? firstPath.id : ''}">Start a learning path</a>
+            <a class="btn lg ghost" href="/modules">Browse modules</a>
+          </div>
         </div>
-        <ul class="legend-list">
-          ${Object.entries(SE.kinds).map(([k, v]) => `<li class="k-${k}"><span class="swatch"></span>${esc(v.label)}</li>`).join('')}
-        </ul>
       </section>`;
   }
 
@@ -220,11 +317,7 @@
     const d = dom && domainOf(dom);
     const list = MODS.filter((m) => (!dom || m.domain === dom) && (st.level === 'all' || m.level === st.level));
     return `
-      <header class="page-head">
-        <p class="crumbs-inline"><a href="/">Home</a> / ${d ? '<a href="/modules">Modules</a> / ' : ''}<span>${d ? esc(d.name) : 'Modules'}</span></p>
-        <h1>${d ? esc(d.name) : 'All modules'}</h1>
-        <p class="lead">${d ? esc(d.blurb) : `${MODS.length} interactive walkthroughs across ${LIVE.length} topics. Pick one, press play.`}</p>
-      </header>
+      ${pageHero(`<a href="/">Home</a> / ${d ? '<a href="/modules">Modules</a> / ' : ''}<span>${d ? esc(d.name) : 'Modules'}</span>`, d ? esc(d.name) : 'All modules', d ? esc(d.blurb) : `${MODS.length} interactive walkthroughs across ${LIVE.length} topics. Pick one, press play.`)}
       <div class="filters">
         <div class="filter-row" role="group" aria-label="Topic">
           <a class="chip ${!dom ? 'on' : ''}" href="/modules">All topics</a>
@@ -240,11 +333,7 @@
 
   function pathsHTML() {
     return `
-      <header class="page-head">
-        <p class="crumbs-inline"><a href="/">Home</a> / <span>Learning paths</span></p>
-        <h1>Learning paths</h1>
-        <p class="lead">Short, ordered sets of modules. Each one builds on the last, so it's worth going top to bottom.</p>
-      </header>
+      ${pageHero('<a href="/">Home</a> / <span>Learning paths</span>', 'Learning paths', "Short, ordered sets of modules. Each one builds on the last, so it's worth going top to bottom.")}
       ${SE.paths.map((p) => {
         const ms = pathMods(p);
         if (!ms.length) return '';
@@ -268,11 +357,7 @@
     const items = SE.glossary.slice().sort((a, b) => a.term.localeCompare(b.term));
     const letters = [...new Set(items.map((g) => g.term[0].toUpperCase()))];
     return `
-      <header class="page-head">
-        <p class="crumbs-inline"><a href="/">Home</a> / <span>Glossary</span></p>
-        <h1>Glossary</h1>
-        <p class="lead">Plain-language definitions of the terms used across the site, with links to the modules that show them in action.</p>
-      </header>
+      ${pageHero('<a href="/">Home</a> / <span>Glossary</span>', 'Glossary', 'Plain-language definitions of the terms used across the site, with links to the modules that show them in action.')}
       <div class="gloss-tools">
         <input id="glossFilter" type="search" placeholder="Filter terms, e.g. TTL" aria-label="Filter glossary terms" autocomplete="off">
         <nav class="gloss-letters" aria-label="Jump to letter">${letters.map((l) => `<a href="#gl-${l}">${l}</a>`).join('')}</nav>
@@ -287,48 +372,111 @@
   }
 
   function aboutHTML() {
-    const k = (s) => `<kbd>${s}</kbd>`;
+    const k = (x) => `<kbd>${x}</kbd>`;
+    const s = siteStats();
+    const card = (ico, title, text) => `<article class="info-card"><span class="info-ico"><svg viewBox="0 0 48 48" aria-hidden="true">${icon(ico)}</svg></span><h3>${title}</h3><p>${text}</p></article>`;
     return `
-      <article class="prose">
-        <p class="crumbs-inline"><a href="/">Home</a> / <span>About</span></p>
-        <h1>About ${esc(SITE)}</h1>
-        <p class="lead">${esc(SITE)} is a free, open learning site for anyone getting into security: students, developers, analysts and people switching careers.</p>
-        <p>Most security material either describes an attack in a paragraph or drops you straight into a lab. This site sits in between. Each module plays out one attack, protocol or defense message by message, so you can see what each machine sends, read why it matters, and look at the actual request or payload. Attack modules always finish with the fix.</p>
+      ${pageHero('<a href="/">Home</a> / <span>About</span>', 'About Security Explorer', 'A free, open learning site that shows how attacks, protocols and defenses really work, one message at a time.')}
 
-        <h2>Using a module</h2>
-        <ul>
-          <li><b>Play</b> runs the whole walkthrough. <b>Next step</b> moves one step at a time.</li>
-          <li>Switch between the <b>Network</b> diagram and a <b>Sequence</b> diagram at the top of the stage.</li>
-          <li>Rows in the packet table marked “payload” can be expanded to show the raw message.</li>
-          <li>Every step has its own link, e.g. <code>securityexplorer.org/m/sqli/3</code>, so you can share exactly what you're looking at.</li>
+      <section class="section about-split">
+        <div>
+          <p class="eyebrow">Why it exists</p>
+          <h2>Between reading about it and hacking a lab</h2>
+          <p>Most security material either describes an attack in a paragraph or drops you straight into a lab. Security Explorer sits in between: each module plays out one scenario message by message, so you can see what each machine sends, read why it matters, and inspect the actual request or payload.</p>
+          <p>Every attack module ends with the fix, because understanding the defense is the point.</p>
+        </div>
+        <aside class="glance">
+          <h3>At a glance</h3>
+          <dl>
+            <div><dt>${s.modules}</dt><dd>interactive modules</dd></div>
+            <div><dt>${s.steps}</dt><dd>animated steps</dd></div>
+            <div><dt>${s.questions}</dt><dd>quiz questions</dd></div>
+            <div><dt>${s.terms}</dt><dd>glossary terms</dd></div>
+          </dl>
+        </aside>
+      </section>
+
+      <section class="section">
+        <div class="section-intro"><p class="eyebrow">Who it's for</p><h2>Built for anyone learning security</h2></div>
+        <div class="card-grid-4">
+          ${card('user', 'Students', 'Build an intuition for networking and security concepts before exams and labs.')}
+          ${card('browser', 'Developers', 'See exactly how injection, XSS, CSRF and API flaws happen, and how to write the fix.')}
+          ${card('siem', 'Analysts and SOC teams', 'Understand what attacks look like on the wire, and what to watch for in logs.')}
+          ${card('cert', 'Career changers', 'Start from the fundamentals with guided learning paths and short quizzes.')}
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-intro"><p class="eyebrow">How it works</p><h2>Four steps in every module</h2></div>
+        <ol class="steps-row">
+          <li><span>1</span><h3>Watch</h3><p>Press play and follow each packet on a network or sequence diagram.</p></li>
+          <li><span>2</span><h3>Read</h3><p>Each step explains what happens and why, in plain language.</p></li>
+          <li><span>3</span><h3>Inspect</h3><p>Open the packet table to see the real request, response or payload.</p></li>
+          <li><span>4</span><h3>Fix and check</h3><p>Finish on the defense, then test yourself with a short quiz.</p></li>
+        </ol>
+      </section>
+
+      <section class="section">
+        <div class="section-intro"><p class="eyebrow">Our principles</p><h2>What you can expect</h2></div>
+        <div class="card-grid-4">
+          ${card('cert', 'Accurate', 'Content follows public standards and links to the CWE, OWASP, MITRE or RFC entry behind it.')}
+          ${card('shield', 'Defense first', 'Attacks are explained to be understood and stopped. Every attack module ends on the fix.')}
+          ${card('lock', 'Private by design', 'No accounts, ads or cookies. Visits are counted anonymously, without personal data.')}
+          ${card('cloud', 'Free and open', 'Everything is free to use, on any device, with nothing to install.')}
+        </div>
+      </section>
+
+      <section class="section about-split">
+        <div>
+          <p class="eyebrow">Sources</p>
+          <h2>Built on trusted references</h2>
+          <p>Modules reference public standards and knowledge bases, and the codes in each module link straight to the matching entry. Example IP addresses and domains come from ranges reserved for documentation, so they never point at real systems.</p>
+        </div>
+        <ul class="source-list">
+          <li><a href="https://owasp.org/www-project-top-ten/" ${ext}>OWASP Top 10</a><small>Web application risks</small></li>
+          <li><a href="https://owasp.org/API-Security/" ${ext}>OWASP API Security Top 10</a><small>API risks</small></li>
+          <li><a href="https://genai.owasp.org/" ${ext}>OWASP Top 10 for LLM Applications</a><small>AI and LLM risks</small></li>
+          <li><a href="https://attack.mitre.org/" ${ext}>MITRE ATT&amp;CK</a> · <a href="https://atlas.mitre.org/" ${ext}>ATLAS</a> · <a href="https://cwe.mitre.org/" ${ext}>CWE</a><small>Adversary techniques and weaknesses</small></li>
+          <li><a href="https://www.rfc-editor.org/" ${ext}>IETF RFCs</a><small>Protocol specifications</small></li>
         </ul>
-        <table class="kv about-keys">
-          <tr><th>${k('Space')}</th><td>Play / pause</td></tr>
-          <tr><th>${k('→')} ${k('←')}</th><td>Next / previous step</td></tr>
-          <tr><th>${k('/')} or ${k(isMac() ? '⌘' : 'Ctrl')} ${k('K')}</th><td>Search modules</td></tr>
-          <tr><th>${k('Esc')}</th><td>Close search or the module list</td></tr>
-        </table>
+      </section>
 
-        <h2>Colours in the diagrams</h2>
-        <ul class="legend-list">${Object.entries(SE.kinds).map(([kk, v]) => `<li class="k-${kk}"><span class="swatch"></span>${esc(v.label)}</li>`).join('')}</ul>
+      <section class="section about-split">
+        <div>
+          <p class="eyebrow">Using the site</p>
+          <h2>Keyboard shortcuts</h2>
+          <table class="kv about-keys">
+            <tr><th>${k('Space')}</th><td>Play / pause</td></tr>
+            <tr><th>${k('→')} ${k('←')}</th><td>Next / previous step</td></tr>
+            <tr><th>${k('/')} or ${k(isMac() ? '⌘' : 'Ctrl')} ${k('K')}</th><td>Search modules</td></tr>
+            <tr><th>${k('Esc')}</th><td>Close search or the module list</td></tr>
+          </table>
+          <p class="muted small">Every step has its own link, for example <code>securityexplorer.org/m/sqli/3</code>, so you can share exactly what you're looking at.</p>
+        </div>
+        <div>
+          <p class="eyebrow">Diagram colours</p>
+          <h2>Reading the packets</h2>
+          <ul class="legend-list">${Object.entries(SE.kinds).map(([kk, v]) => `<li class="k-${kk}"><span class="swatch"></span>${esc(v.label)}</li>`).join('')}</ul>
+        </div>
+      </section>
 
-        <h2>Use it responsibly</h2>
-        <p>Everything here explains how things work so you can build and defend systems better. Only test systems you own or have written permission to test. If you want hands-on practice, use purpose-built labs and capture-the-flag platforms.</p>
+      <section class="section">
+        <div class="privacy-card">
+          <span class="info-ico"><svg viewBox="0 0 48 48" aria-hidden="true">${icon('lock')}</svg></span>
+          <div>
+            <h2>Privacy</h2>
+            <p>No accounts, ads or cookies. Visits are counted anonymously with <a href="https://www.goatcounter.com/" ${ext}>GoatCounter</a>, which doesn't use cookies or collect personal data. Your theme choice, completed modules and quiz scores are saved only in your own browser and never sent anywhere.</p>
+            <p class="muted small">Use what you learn responsibly: only test systems you own or have written permission to test.</p>
+          </div>
+        </div>
+      </section>
 
-        <h2>Sources</h2>
-        <p>Modules reference these public standards and knowledge bases. Codes in each module link straight to the matching entry.</p>
-        <ul>
-          <li><a href="https://owasp.org/www-project-top-ten/" ${ext}>OWASP Top 10</a>, <a href="https://owasp.org/API-Security/" ${ext}>OWASP API Security Top 10</a> and <a href="https://genai.owasp.org/" ${ext}>OWASP Top 10 for LLM Applications</a></li>
-          <li><a href="https://cwe.mitre.org/" ${ext}>MITRE CWE</a>, <a href="https://attack.mitre.org/" ${ext}>MITRE ATT&amp;CK</a> and <a href="https://atlas.mitre.org/" ${ext}>MITRE ATLAS</a></li>
-          <li><a href="https://www.rfc-editor.org/" ${ext}>IETF RFCs</a> for protocol details</li>
-        </ul>
-        <p>IP addresses and domains in the examples come from ranges reserved for documentation, so they don't point at anyone's real systems.</p>
-
-        <h2>Get in touch</h2>
-        <p>Questions, ideas for new topics, or corrections are all welcome on the <a href="/contact">contact page</a>.</p>
-
-        <h2>Privacy</h2>
-        <p>No accounts, ads or cookies. Visits are counted anonymously with <a href="https://www.goatcounter.com/" ${ext}>GoatCounter</a>, which doesn't use cookies or collect personal data. Your theme choice, completed modules and quiz scores are saved only in your own browser, never sent anywhere.</p>      </article>`;
+      <section class="cta-band bleed">
+        <div class="wrap cta-in">
+          <div><h2>Questions, ideas or corrections?</h2><p>Suggestions for new topics and corrections are always welcome.</p></div>
+          <div class="hero-actions"><a class="btn primary lg" href="/contact">Get in touch</a></div>
+        </div>
+      </section>`;
   }
 
   const CONTACT_TOPICS = ['Question', 'Suggest a topic', 'Report a mistake', 'Other'];
@@ -339,10 +487,9 @@
     const page = (q.get('page') || '').slice(0, 200);
     contactStarted = Date.now();
     return `
+      ${pageHero('<a href="/">Home</a> / <span>Contact</span>', 'Contact', 'Questions, ideas for new modules, or a mistake you spotted: send a note and it goes straight to the person who runs the site.')}
+      <div class="contact-layout">
       <article class="prose contact">
-        <p class="crumbs-inline"><a href="/">Home</a> / <span>Contact</span></p>
-        <h1>Contact</h1>
-        <p class="lead">Questions, ideas for new modules, or a mistake you spotted: send a note and it goes straight to the person who runs the site.</p>
         <form id="contactForm" class="contact-form" novalidate>
           <fieldset class="topic-pick">
             <legend>What's it about?</legend>
@@ -362,7 +509,13 @@
           </div>
           <p class="muted small">Messages are delivered by email and aren't published or shared. Your email address is only used to reply to you.</p>
         </form>
-      </article>`;
+      </article>
+      <aside class="contact-side">
+        <div class="side-card"><h3>Suggest a topic</h3><p>Missing an attack, protocol or defense you'd like to see played out? Tell us which one.</p></div>
+        <div class="side-card"><h3>Report a mistake</h3><p>Each module has a report link at the end, so we know exactly which step you mean.</p></div>
+        <div class="side-card"><h3>Response time</h3><p>Messages are usually answered within a few days.</p></div>
+      </aside>
+      </div>`;
   }
   async function submitContact(form) {
     const status = form.querySelector('.form-status'), btn = form.querySelector('button[type="submit"]');
