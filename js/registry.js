@@ -13,7 +13,7 @@ window.SE = (() => {
     { id: 'network', name: 'Network Security', short: 'Network', icon: 'router',
       blurb: 'Reconnaissance, spoofing, man-in-the-middle and denial-of-service on the wire.' },
     { id: 'identity', name: 'Identity & Access', short: 'Identity', icon: 'idp',
-      blurb: 'OAuth, SAML, JWT and Kerberos: how login works and how attackers abuse it.' },
+      blurb: 'Identity and access management (IAM): OAuth, SAML, Kerberos, MFA and privileged access, and how attackers abuse weak logins.' },
     { id: 'crypto', name: 'Cryptography', short: 'Crypto', icon: 'lock',
       blurb: 'TLS, key exchange, certificates and password storage, step by step.' },
     { id: 'cloud', name: 'Cloud Security', short: 'Cloud', icon: 'cloud',
@@ -22,6 +22,8 @@ window.SE = (() => {
       blurb: 'Phishing, ransomware, command-and-control and software supply-chain attacks.' },
     { id: 'defense', name: 'Defense & Blue Team', short: 'Defense', icon: 'shield',
       blurb: 'WAFs, IDS, SIEM and Zero Trust: how defenders see and stop attacks.' },
+    { id: 'soc', name: 'Security Operations (SOC)', short: 'SOC', icon: 'siem',
+      blurb: 'How a security operations center works: phishing triage, EDR, incident response, threat hunting and automation.' },
     { id: 'ai', name: 'AI & LLM Security', short: 'AI', icon: 'ai',
       blurb: 'How LLM apps and agents work, how prompt injection and unsafe output break them, and how to build guardrails.' },
   ];
@@ -62,6 +64,12 @@ window.SE = (() => {
     { id: 'blue-team', level: 'Intermediate', title: 'Blue team basics',
       desc: 'Controls and workflows defenders rely on every day, from the edge to the SOC.',
       modules: ['waf', 'ids', 'siem', 'zero-trust'] },
+    { id: 'iam', level: 'Intermediate', title: 'Identity and access (IAM)',
+      desc: 'How modern login and single sign-on work, why MFA can still be beaten, and how to lock down admin access.',
+      modules: ['oauth-pkce', 'saml-sso', 'kerberos', 'mfa-fatigue', 'pam-jit', 'zero-trust'] },
+    { id: 'soc-analyst', level: 'Intermediate', title: 'SOC analyst essentials',
+      desc: 'A day in the SOC: from logs and alerts to investigations, containment, hunting and automation.',
+      modules: ['siem', 'phishing-triage', 'edr-detection', 'incident-response', 'threat-hunting', 'soar-playbook'] },
   ];
 
   const modules = [];
