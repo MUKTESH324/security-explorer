@@ -73,7 +73,7 @@
   /* ---------- routing ---------- */
   function route() {
     closeDrawer(); closePalette(); closeNav();
-    const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+    const parts = location.pathname.split('/').filter(Boolean);
     const [a, b, c] = parts;
     if (!a) return showPage(homeHTML(), '', 'home');
     if (a === 'modules') {
@@ -91,7 +91,7 @@
   }
   function syncHash() {
     const m = st.mod; if (!m) return;
-    history.replaceState(null, '', `#/m/${m.id}${st.step >= 0 ? '/' + (st.step + 1) : ''}`);
+    history.replaceState(null, '', `/m/${m.id}${st.step >= 0 ? '/' + (st.step + 1) : ''}`);
   }
   function setNav(key) {
     $$('#mainNav [data-nav]').forEach((a) => a.classList.toggle('on', a.dataset.nav === key));
@@ -119,12 +119,12 @@
           <h1>Security concepts, one packet at a time.</h1>
           <p class="lead">Step-by-step walkthroughs of real attacks, protocols and defenses. Each module shows who sends what to whom, explains why it works, and finishes with how to fix it.</p>
           <div class="hero-actions">
-            <a class="btn primary lg" href="#/modules">Browse modules</a>
-            <a class="btn lg" href="#/m/${start.id}">Try ${esc(start.name)}</a>
+            <a class="btn primary lg" href="/modules">Browse modules</a>
+            <a class="btn lg" href="/m/${start.id}">Try ${esc(start.name)}</a>
           </div>
           <p class="hero-note">${MODS.length} modules and ${total} steps across ${LIVE.length} topics. Nothing to install, no sign-up.</p>
         </div>
-        <a class="preview" href="#/m/${feat.id}/${si + 1}">
+        <a class="preview" href="/m/${feat.id}/${si + 1}">
           <div class="preview-top"><span class="dots"><i></i><i></i><i></i></span><span>${esc(feat.name)}</span></div>
           ${previewSVG(feat, si)}
           <div class="preview-cap"><span>Step ${si + 1} of ${feat.steps.length}</span><b>${esc(feat.steps[si].title)}</b></div>
@@ -132,12 +132,12 @@
       </section>
 
       <section class="section">
-        <div class="section-head"><h2>Learning paths</h2><a href="#/paths">See all paths</a></div>
+        <div class="section-head"><h2>Learning paths</h2><a href="/paths">See all paths</a></div>
         <div class="grid-3">${SE.paths.slice(0, 3).map(pathCard).join('')}</div>
       </section>
 
       <section class="section">
-        <div class="section-head"><h2>Browse by topic</h2><a href="#/modules">All modules</a></div>
+        <div class="section-head"><h2>Browse by topic</h2><a href="/modules">All modules</a></div>
         <div class="topics">${LIVE.map(topicRow).join('')}</div>
       </section>
 
@@ -174,7 +174,7 @@
 
   function pathCard(p) {
     const ms = pathMods(p);
-    return `<a class="card path-card" href="#/paths/${p.id}">
+    return `<a class="card path-card" href="/paths/${p.id}">
       <span class="eyebrow">${esc(p.level)} path</span>
       <h3>${esc(p.title)}</h3>
       <p>${esc(p.desc)}</p>
@@ -183,14 +183,14 @@
   }
   function topicRow(d) {
     const n = modsIn(d.id).length;
-    return `<a class="topic" href="#/modules/${d.id}">
+    return `<a class="topic" href="/modules/${d.id}">
       <span class="topic-ico"><svg viewBox="0 0 48 48" aria-hidden="true">${icon(d.icon)}</svg></span>
       <span class="topic-text"><b>${esc(d.name)}</b><small>${esc(d.blurb)}</small></span>
       <span class="topic-count">${n} module${n === 1 ? '' : 's'}</span>
     </a>`;
   }
   function mcard(m) {
-    return `<a class="card mcard" href="#/m/${m.id}">
+    return `<a class="card mcard" href="/m/${m.id}">
       <div class="mcard-meta">${kindTag(m)}<span>${esc(domainOf(m.domain).short)}</span></div>
       <h3>${esc(m.name)}</h3>
       <p>${esc(m.full)}</p>
@@ -203,14 +203,14 @@
     const list = MODS.filter((m) => (!dom || m.domain === dom) && (st.level === 'all' || m.level === st.level));
     return `
       <header class="page-head">
-        <p class="crumbs-inline"><a href="#/">Home</a> / ${d ? '<a href="#/modules">Modules</a> / ' : ''}<span>${d ? esc(d.name) : 'Modules'}</span></p>
+        <p class="crumbs-inline"><a href="/">Home</a> / ${d ? '<a href="/modules">Modules</a> / ' : ''}<span>${d ? esc(d.name) : 'Modules'}</span></p>
         <h1>${d ? esc(d.name) : 'All modules'}</h1>
         <p class="lead">${d ? esc(d.blurb) : `${MODS.length} interactive walkthroughs across ${LIVE.length} topics. Pick one, press play.`}</p>
       </header>
       <div class="filters">
         <div class="filter-row" role="group" aria-label="Topic">
-          <a class="chip ${!dom ? 'on' : ''}" href="#/modules">All topics</a>
-          ${LIVE.map((x) => `<a class="chip ${x.id === dom ? 'on' : ''}" href="#/modules/${x.id}">${esc(x.short)}</a>`).join('')}
+          <a class="chip ${!dom ? 'on' : ''}" href="/modules">All topics</a>
+          ${LIVE.map((x) => `<a class="chip ${x.id === dom ? 'on' : ''}" href="/modules/${x.id}">${esc(x.short)}</a>`).join('')}
         </div>
         <div class="filter-row" role="group" aria-label="Level">
           ${['all', ...LEVELS].map((l) => `<button class="chip ${st.level === l ? 'on' : ''}" data-level="${l}" type="button">${l === 'all' ? 'Any level' : l}</button>`).join('')}
@@ -223,7 +223,7 @@
   function pathsHTML() {
     return `
       <header class="page-head">
-        <p class="crumbs-inline"><a href="#/">Home</a> / <span>Learning paths</span></p>
+        <p class="crumbs-inline"><a href="/">Home</a> / <span>Learning paths</span></p>
         <h1>Learning paths</h1>
         <p class="lead">Short, ordered sets of modules. Each one builds on the last, so it's worth going top to bottom.</p>
       </header>
@@ -233,9 +233,9 @@
         return `<section class="path" id="path-${p.id}">
           <div class="path-head">
             <div><span class="eyebrow">${esc(p.level)}</span><h2>${esc(p.title)}</h2><p>${esc(p.desc)}</p></div>
-            <a class="btn" href="#/m/${ms[0].id}">Start path</a>
+            <a class="btn" href="/m/${ms[0].id}">Start path</a>
           </div>
-          <ol class="path-list">${ms.map((m, i) => `<li><a href="#/m/${m.id}">
+          <ol class="path-list">${ms.map((m, i) => `<li><a href="/m/${m.id}">
             <span class="idx">${i + 1}</span>
             <span class="t"><b>${esc(m.name)}</b><small>${esc(m.full)}</small></span>
             <span class="meta">${kindTag(m)}<span>${minutes(m)} min</span></span></a></li>`).join('')}</ol>
@@ -247,7 +247,7 @@
     const k = (s) => `<kbd>${s}</kbd>`;
     return `
       <article class="prose">
-        <p class="crumbs-inline"><a href="#/">Home</a> / <span>About</span></p>
+        <p class="crumbs-inline"><a href="/">Home</a> / <span>About</span></p>
         <h1>About ${esc(SITE)}</h1>
         <p class="lead">${esc(SITE)} is a free, open learning site for anyone getting into security: students, developers, analysts and people switching careers.</p>
         <p>Most security material either describes an attack in a paragraph or drops you straight into a lab. This site sits in between. Each module plays out one attack, protocol or defense message by message, so you can see what each machine sends, read why it matters, and look at the actual request or payload. Attack modules always finish with the fix.</p>
@@ -257,7 +257,7 @@
           <li><b>Play</b> runs the whole walkthrough. <b>Next step</b> moves one step at a time.</li>
           <li>Switch between the <b>Network</b> diagram and a <b>Sequence</b> diagram at the top of the stage.</li>
           <li>Rows in the packet table marked “payload” can be expanded to show the raw message.</li>
-          <li>Every step has its own link, e.g. <code>#/m/sqli/3</code>, so you can share exactly what you're looking at.</li>
+          <li>Every step has its own link, e.g. <code>securityexplorer.org/m/sqli/3</code>, so you can share exactly what you're looking at.</li>
         </ul>
         <table class="kv about-keys">
           <tr><th>${k('Space')}</th><td>Play / pause</td></tr>
@@ -290,7 +290,7 @@
       <p class="eyebrow">404</p>
       <h1>We couldn't find that page</h1>
       <p class="lead">The link may be out of date, or the module may have been renamed.</p>
-      <a class="btn primary" href="#/modules">Browse modules</a>
+      <a class="btn primary" href="/modules">Browse modules</a>
     </div>`;
 
   /* ---------- drawer ---------- */
@@ -309,7 +309,7 @@
     const doms = st.tab === 'all' ? LIVE : LIVE.filter((d) => d.id === st.tab);
     $('#list').innerHTML = doms.map((d) => `<div class="dom">${esc(d.name)}</div>` + modsIn(d.id).map((m) => {
       const cur = st.mod === m;
-      return `<a class="item${cur ? ' cur' : ''}" href="#/m/${m.id}"><span class="kind-dot kind-${m.kind}"></span><span><b>${esc(m.name)}</b><small>${esc(m.full)}</small></span></a>` +
+      return `<a class="item${cur ? ' cur' : ''}" href="/m/${m.id}"><span class="kind-dot kind-${m.kind}"></span><span><b>${esc(m.name)}</b><small>${esc(m.full)}</small></span></a>` +
         (cur ? `<ol class="substeps">${m.steps.map((s, i) => `<li><button data-step="${i}" class="${i === st.step ? 'cur' : ''}" type="button">${i + 1}. ${esc(s.title)}</button></li>`).join('')}</ol>` : '');
     }).join('')).join('');
   }
@@ -334,7 +334,7 @@
     const q = $('#palInput').value;
     palItems = search(q); palIdx = 0;
     $('#palList').innerHTML = (q.trim() ? '' : '<li class="pal-label">Suggested</li>') + (palItems.length
-      ? palItems.map((m, i) => `<li><a href="#/m/${m.id}" class="${i === 0 ? 'sel' : ''}" data-i="${i}"><span class="kind-dot kind-${m.kind}"></span><span class="t"><b>${esc(m.name)}</b><small>${esc(m.full)}</small></span><span class="pal-meta">${esc(domainOf(m.domain).short)}</span></a></li>`).join('')
+      ? palItems.map((m, i) => `<li><a href="/m/${m.id}" class="${i === 0 ? 'sel' : ''}" data-i="${i}"><span class="kind-dot kind-${m.kind}"></span><span class="t"><b>${esc(m.name)}</b><small>${esc(m.full)}</small></span><span class="pal-meta">${esc(domainOf(m.domain).short)}</span></a></li>`).join('')
       : `<li class="pal-empty">No modules match “${esc(q)}”.</li>`);
   }
   function movePalette(d) {
@@ -360,7 +360,7 @@
   }
   function renderCrumbs() {
     const m = st.mod, d = domainOf(m.domain);
-    $('#crumbs').innerHTML = `<a href="#/modules">Modules</a><span>/</span><a href="#/modules/${d.id}">${esc(d.name)}</a><span>/</span><b>${esc(m.name)}</b>`;
+    $('#crumbs').innerHTML = `<a href="/modules">Modules</a><span>/</span><a href="/modules/${d.id}">${esc(d.name)}</a><span>/</span><b>${esc(m.name)}</b>`;
   }
   function renderDiagram() {
     const m = st.mod, pairs = new Set();
@@ -417,7 +417,7 @@
       <p>${fmt(s.text)}</p>
       ${s.fields?.length ? `<table class="kv">${s.fields.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${fmt(v)}</td></tr>`).join('')}</table>` : ''}
       ${s.defend ? `<div class="box"><h2>Defender's note</h2><p>${fmt(s.defend)}</p></div>` : ''}
-      ${last ? `<div class="d-actions"><button class="btn" data-act="overview" type="button">Review the defenses</button>${next ? `<a class="btn primary" href="#/m/${next.id}">Next: ${esc(next.name)}</a>` : ''}</div>` : ''}`;
+      ${last ? `<div class="d-actions"><button class="btn" data-act="overview" type="button">Review the defenses</button>${next ? `<a class="btn primary" href="/m/${next.id}">Next: ${esc(next.name)}</a>` : ''}</div>` : ''}`;
   }
 
   function rowHTML(p, isNew) {
@@ -566,11 +566,16 @@
   function initChrome() {
     $('#kbdHint').textContent = isMac() ? '⌘K' : 'Ctrl K';
     $('#year').textContent = new Date().getFullYear();
-    $('#footerTopics').innerHTML = LIVE.map((d) => `<a href="#/modules/${d.id}">${esc(d.name)}</a>`).join('');
+    $('#footerTopics').innerHTML = LIVE.map((d) => `<a href="/modules/${d.id}">${esc(d.name)}</a>`).join('');
   }
 
   /* ---------- events ---------- */
   document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href^="/"]');
+    if (link && !link.target && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && e.button === 0) {
+      e.preventDefault();
+      return navigate(link.getAttribute('href'));
+    }
     const t = e.target.closest('button, a, tr.row');
     if (!t) return;
     if (t.dataset.level) { st.level = t.dataset.level; return route(); }
@@ -609,7 +614,7 @@
   $('#palInput').addEventListener('keydown', (e) => {
     if (e.key === 'ArrowDown') { e.preventDefault(); movePalette(1); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); movePalette(-1); }
-    else if (e.key === 'Enter') { const m = palItems[palIdx]; if (m) { closePalette(); location.hash = `#/m/${m.id}`; } }
+    else if (e.key === 'Enter') { const m = palItems[palIdx]; if (m) { closePalette(); navigate(`/m/${m.id}`); } }
     else if (e.key === 'Escape') closePalette();
   });
 
@@ -630,7 +635,9 @@
   // Cookieless page counts (GoatCounter). Steps share their module's path.
   let lastCounted = '';
   function track() {
-    const path = '/' + location.hash.replace(/^#\/?/, '').replace(/^(m\/[^/]+)\/\d+$/, '$1');
+    const path = '/' + location.pathname.split('/').filter(Boolean).join('/').replace(/^(m\/[^/]+)\/\d+$/, '$1');
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.href = location.origin + path + (path === '/' ? '' : '/');
     if (path === lastCounted) return;
     const send = () => {
       if (!window.goatcounter || !window.goatcounter.count) return;
@@ -641,7 +648,13 @@
     else window.addEventListener('load', send, { once: true });
   }
 
-  window.addEventListener('hashchange', () => { route(); track(); });
+  // Client-side navigation with real paths (/m/sqli). Old #/ links are upgraded.
+  function navigate(url) {
+    if (url !== location.pathname) history.pushState(null, '', url);
+    route(); track();
+  }
+  if (location.hash.startsWith('#/')) history.replaceState(null, '', '/' + location.hash.slice(2).replace(/^\/+/, ''));
+  window.addEventListener('popstate', () => { route(); track(); });
   route();
   track();
 })();

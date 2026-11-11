@@ -22,6 +22,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Build a page per route, sitemap and robots.txt
+        run: python3 scripts/build_pages.py .
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

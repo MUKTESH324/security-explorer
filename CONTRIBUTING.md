@@ -12,7 +12,7 @@ To add a module to a learning path, put its `id` in the `modules` list of that p
 
 ```js
 SE.register({
-  id: 'tls13',                 // unique, used in the URL (#/m/tls13)
+  id: 'tls13',                 // unique, used in the URL (/m/tls13)
   domain: 'crypto',            // one of the domain ids
   kind: 'protocol',            // 'attack' | 'protocol' | 'defense'
   level: 'Beginner',           // Beginner | Intermediate | Advanced

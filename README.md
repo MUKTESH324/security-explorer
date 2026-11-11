@@ -39,6 +39,10 @@ Every push to `main` redeploys automatically on all three.
 
 The site ships with a strict Content-Security-Policy (no inline scripts, no third-party scripts; fonts from Google Fonts only), plus `nosniff`, `Referrer-Policy`, `Permissions-Policy`, HSTS and `frame-ancestors 'none'` on Vercel/Netlify. GitHub Pages can't set headers, so the CSP is also included as a `<meta>` tag in `index.html`. If you add an external script or image source, update the CSP in all three places.
 
+## Pages and SEO
+
+`scripts/build_pages.py` runs in the deploy workflow and writes a real page for every route (`/m/<id>/`, `/modules/<topic>/`, `/paths/`, `/about/`) with its own title, description and canonical link, plus `404.html`, `sitemap.xml` and `robots.txt`. These files are generated during deploy, not committed. To preview them locally, run it on a copy of the folder.
+
 ## Project layout
 
 | Path | What it is |
@@ -49,6 +53,7 @@ The site ships with a strict Content-Security-Policy (no inline scripts, no thir
 | `js/registry.js` | Topics, learning paths and packet colour categories |
 | `js/modules/*.js` | One file per topic; each module is a data object |
 | `js/app.js` | Routing, pages, diagram animation, playback |
+| `scripts/build_pages.py` | Pre-builds one page per route + sitemap at deploy time |
 
 ## Content
 
