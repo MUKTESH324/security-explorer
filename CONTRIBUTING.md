@@ -6,6 +6,8 @@
 
 Domains are defined in `js/registry.js` (`web`, `api`, `network`, `identity`, `crypto`, `cloud`, `threats`, `defense`, `ai`). A topic stays hidden on the site until it has at least one module.
 
+Add 3 quiz questions for each new module in `js/quizzes.js` (`[question, [options], correctIndex, explanation]`), and any new terms to `js/glossary.js`.
+
 To add a module to a learning path, put its `id` in the `modules` list of that path in `js/registry.js`.
 
 ## Schema

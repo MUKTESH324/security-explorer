@@ -52,8 +52,12 @@ The site ships with a strict Content-Security-Policy (no inline scripts, no thir
 | `js/config.js` | Site settings (site name) |
 | `js/registry.js` | Topics, learning paths and packet colour categories |
 | `js/modules/*.js` | One file per topic; each module is a data object |
+| `js/quizzes.js` | End-of-module quiz questions, keyed by module id |
+| `js/glossary.js` | Glossary terms, with links to related modules |
 | `js/app.js` | Routing, pages, diagram animation, playback |
-| `scripts/build_pages.py` | Pre-builds one page per route + sitemap at deploy time |
+| `scripts/build_pages.py` | Pre-builds one page per route, structured data and sitemap at deploy time |
+| `og-image.svg` / `og-image.png` | Link preview image (edit the SVG, re-export the PNG at 1200×630) |
+| `.well-known/security.txt` | How to report a security issue with the site (renew `Expires` yearly) |
 
 ## Content
 

@@ -23,7 +23,16 @@
   const minutes = (m) => Math.max(2, Math.round(m.steps.length * 0.8));
   const pathMods = (p) => p.modules.map((id) => byId[id]).filter(Boolean);
 
-  const st = { mod: null, step: -1, shown: 0, playing: false, speed: 1, view: 'network', token: 0, tab: 'all', level: 'all' };
+  const st = { mod: null, step: -1, shown: 0, playing: false, speed: 1, view: 'network', token: 0, tab: 'all', level: 'all', quiz: null };
+
+  /* ---------- progress (stored only in this browser) ---------- */
+  const PROG_KEY = 'se-progress';
+  let progress = {};
+  try { progress = JSON.parse(localStorage.getItem(PROG_KEY)) || {}; } catch (_) { progress = {}; }
+  const saveProgress = () => { try { localStorage.setItem(PROG_KEY, JSON.stringify(progress)); } catch (_) { /* storage unavailable */ } };
+  const isDone = (id) => !!(progress[id] && progress[id].done);
+  function markDone(id) { if (!isDone(id)) { progress[id] = { ...(progress[id] || {}), done: true }; saveProgress(); } }
+  const doneTag = (id) => (isDone(id) ? ' <span class="done-tag" title="Completed">✓ Done</span>' : '');
 
   /* ---------- helpers ---------- */
   function prepare(m) {
@@ -71,8 +80,10 @@
   const kindTag = (m) => `<span class="kind kind-${m.kind}">${KIND_NAME[m.kind] || esc(m.kind)}</span>`;
 
   /* ---------- routing ---------- */
+  let lastPath = location.pathname;
   function route() {
     closeDrawer(); closePalette(); closeNav();
+    lastPath = location.pathname;
     const parts = location.pathname.split('/').filter(Boolean);
     const [a, b, c] = parts;
     if (!a) return showPage(homeHTML(), '', 'home');
@@ -83,6 +94,12 @@
     if (a === 'paths') {
       showPage(pathsHTML(), 'Learning paths', 'paths');
       if (b) $(`#path-${CSS.escape(b)}`)?.scrollIntoView();
+      return;
+    }
+    if (a === 'glossary') {
+      showPage(glossaryHTML(), 'Glossary', 'glossary');
+      const h = decodeURIComponent(location.hash.slice(1));
+      if (h) ($(`#${CSS.escape(h)}`) || $(`#g-${CSS.escape(h)}`))?.scrollIntoView();
       return;
     }
     if (a === 'about') return showPage(aboutHTML(), 'About', 'about');
@@ -178,7 +195,7 @@
       <span class="eyebrow">${esc(p.level)} path</span>
       <h3>${esc(p.title)}</h3>
       <p>${esc(p.desc)}</p>
-      <span class="card-foot">${ms.length} modules · about ${ms.reduce((a, m) => a + minutes(m), 0)} min</span>
+      <span class="card-foot">${ms.length} modules · about ${ms.reduce((a, m) => a + minutes(m), 0)} min${ms.some((m) => isDone(m.id)) ? ` · ${ms.filter((m) => isDone(m.id)).length}/${ms.length} done` : ''}</span>
     </a>`;
   }
   function topicRow(d) {
@@ -194,7 +211,7 @@
       <div class="mcard-meta">${kindTag(m)}<span>${esc(domainOf(m.domain).short)}</span></div>
       <h3>${esc(m.name)}</h3>
       <p>${esc(m.full)}</p>
-      <div class="card-foot"><span>${esc(m.level || '')}</span><span>${m.steps.length} steps · ${minutes(m)} min</span></div>
+      <div class="card-foot"><span>${esc(m.level || '')}${doneTag(m.id)}</span><span>${m.steps.length} steps · ${minutes(m)} min</span></div>
     </a>`;
   }
 
@@ -230,17 +247,42 @@
       ${SE.paths.map((p) => {
         const ms = pathMods(p);
         if (!ms.length) return '';
+        const done = ms.filter((m) => isDone(m.id)).length, nextUp = ms.find((m) => !isDone(m.id)) || ms[0];
         return `<section class="path" id="path-${p.id}">
           <div class="path-head">
-            <div><span class="eyebrow">${esc(p.level)}</span><h2>${esc(p.title)}</h2><p>${esc(p.desc)}</p></div>
-            <a class="btn" href="/m/${ms[0].id}">Start path</a>
+            <div><span class="eyebrow">${esc(p.level)}${done ? ` · ${done} of ${ms.length} done` : ''}</span><h2>${esc(p.title)}</h2><p>${esc(p.desc)}</p>
+              ${done ? `<div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${ms.length}" aria-valuenow="${done}"><span style="width:${Math.round((done / ms.length) * 100)}%"></span></div>` : ''}</div>
+            <a class="btn" href="/m/${nextUp.id}">${done === 0 ? 'Start path' : done === ms.length ? 'Review path' : 'Continue'}</a>
           </div>
           <ol class="path-list">${ms.map((m, i) => `<li><a href="/m/${m.id}">
-            <span class="idx">${i + 1}</span>
+            <span class="idx${isDone(m.id) ? ' done' : ''}">${isDone(m.id) ? '✓' : i + 1}</span>
             <span class="t"><b>${esc(m.name)}</b><small>${esc(m.full)}</small></span>
             <span class="meta">${kindTag(m)}<span>${minutes(m)} min</span></span></a></li>`).join('')}</ol>
         </section>`;
-      }).join('')}`;
+      }).join('')}
+      ${Object.keys(progress).length ? '<p class="reset-row"><button class="link-btn" data-act="reset-progress" type="button">Reset my progress</button></p>' : ''}`;
+  }
+
+  function glossaryHTML() {
+    const items = SE.glossary.slice().sort((a, b) => a.term.localeCompare(b.term));
+    const letters = [...new Set(items.map((g) => g.term[0].toUpperCase()))];
+    return `
+      <header class="page-head">
+        <p class="crumbs-inline"><a href="/">Home</a> / <span>Glossary</span></p>
+        <h1>Glossary</h1>
+        <p class="lead">Plain-language definitions of the terms used across the site, with links to the modules that show them in action.</p>
+      </header>
+      <div class="gloss-tools">
+        <input id="glossFilter" type="search" placeholder="Filter terms, e.g. TTL" aria-label="Filter glossary terms" autocomplete="off">
+        <nav class="gloss-letters" aria-label="Jump to letter">${letters.map((l) => `<a href="#gl-${l}">${l}</a>`).join('')}</nav>
+      </div>
+      <div class="gloss">${items.map((g, i) => {
+        const L = g.term[0].toUpperCase(), first = i === 0 || items[i - 1].term[0].toUpperCase() !== L;
+        const see = g.see.map((id) => byId[id]).filter(Boolean);
+        return `${first ? `<h2 class="gloss-letter" id="gl-${L}">${L}</h2>` : ''}<dl class="gloss-item" id="g-${g.id}" data-text="${esc((g.term + ' ' + g.def).toLowerCase())}">
+          <dt>${esc(g.term)}</dt><dd>${fmt(g.def)}${see.length ? `<span class="gloss-see">See: ${see.map((m) => `<a href="/m/${m.id}">${esc(m.name)}</a>`).join(', ')}</span>` : ''}</dd></dl>`;
+      }).join('')}</div>
+      <p class="muted gloss-empty" hidden>No terms match.</p>`;
   }
 
   function aboutHTML() {
@@ -282,7 +324,7 @@
         <p>IP addresses and domains in the examples come from ranges reserved for documentation, so they don't point at anyone's real systems.</p>
 
         <h2>Privacy</h2>
-        <p>No accounts, ads or cookies. Visits are counted anonymously with <a href="https://www.goatcounter.com/" ${ext}>GoatCounter</a>, which doesn't use cookies or collect personal data. The only thing stored in your browser is your light/dark theme choice.</p>      </article>`;
+        <p>No accounts, ads or cookies. Visits are counted anonymously with <a href="https://www.goatcounter.com/" ${ext}>GoatCounter</a>, which doesn't use cookies or collect personal data. Your theme choice, completed modules and quiz scores are saved only in your own browser, never sent anywhere.</p>      </article>`;
   }
 
   const notFoundHTML = () => `
@@ -309,7 +351,7 @@
     const doms = st.tab === 'all' ? LIVE : LIVE.filter((d) => d.id === st.tab);
     $('#list').innerHTML = doms.map((d) => `<div class="dom">${esc(d.name)}</div>` + modsIn(d.id).map((m) => {
       const cur = st.mod === m;
-      return `<a class="item${cur ? ' cur' : ''}" href="/m/${m.id}"><span class="kind-dot kind-${m.kind}"></span><span><b>${esc(m.name)}</b><small>${esc(m.full)}</small></span></a>` +
+      return `<a class="item${cur ? ' cur' : ''}" href="/m/${m.id}"><span class="kind-dot kind-${m.kind}"></span><span><b>${esc(m.name)}${isDone(m.id) ? ' <span class="done-tag">✓</span>' : ''}</b><small>${esc(m.full)}</small></span></a>` +
         (cur ? `<ol class="substeps">${m.steps.map((s, i) => `<li><button data-step="${i}" class="${i === st.step ? 'cur' : ''}" type="button">${i + 1}. ${esc(s.title)}</button></li>`).join('')}</ol>` : '');
     }).join('')).join('');
   }
@@ -350,7 +392,7 @@
     document.body.dataset.view = 'explorer';
     setNav('modules');
     if (st.mod !== m) {
-      stop(); st.mod = prepare(m); st.step = -1; st.shown = 0;
+      stop(); st.mod = prepare(m); st.step = -1; st.shown = 0; st.quiz = null;
       document.title = `${m.name} · ${SITE}`;
       renderCrumbs(); renderDiagram(); renderLegend(); renderRows();
       window.scrollTo(0, 0);
@@ -395,6 +437,7 @@
   }
   function renderDetails() {
     const m = st.mod, d = domainOf(m.domain), el = $('#details');
+    if (st.quiz && st.step === m.steps.length - 1 && SE.quizzes?.[m.id]) return renderQuiz();
     if (st.step < 0) {
       el.innerHTML = `
         <p class="eyebrow">${esc(d?.name)}</p>
@@ -410,6 +453,7 @@
     }
     const s = m.steps[st.step], last = st.step === m.steps.length - 1;
     const next = MODS[MODS.indexOf(m) + 1];
+    const quiz = SE.quizzes?.[m.id], best = progress[m.id]?.quiz;
     el.innerHTML = `
       <div class="d-head"><p class="eyebrow">Step ${st.step + 1} of ${m.steps.length}</p><button class="link-btn" data-act="overview" type="button">Overview</button></div>
       <h1 class="d-title">${esc(s.title)}</h1>
@@ -417,7 +461,34 @@
       <p>${fmt(s.text)}</p>
       ${s.fields?.length ? `<table class="kv">${s.fields.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${fmt(v)}</td></tr>`).join('')}</table>` : ''}
       ${s.defend ? `<div class="box"><h2>Defender's note</h2><p>${fmt(s.defend)}</p></div>` : ''}
-      ${last ? `<div class="d-actions"><button class="btn" data-act="overview" type="button">Review the defenses</button>${next ? `<a class="btn primary" href="/m/${next.id}">Next: ${esc(next.name)}</a>` : ''}</div>` : ''}`;
+      ${last ? `${quiz ? `<button class="btn primary block" data-act="quiz" type="button">${best != null ? `Retake the quiz · best ${best}/${quiz.length}` : `Check your understanding · ${quiz.length} questions`}</button>` : ''}
+        <div class="d-actions"><button class="btn" data-act="overview" type="button">Review the defenses</button>${next ? `<a class="btn${quiz ? '' : ' primary'}" href="/m/${next.id}">Next: ${esc(next.name)}</a>` : ''}</div>` : ''}`;
+  }
+
+  function renderQuiz() {
+    const m = st.mod, qs = SE.quizzes[m.id], z = st.quiz, el = $('#details');
+    const next = MODS[MODS.indexOf(m) + 1];
+    if (z.i >= qs.length) {
+      const best = Math.max(z.score, progress[m.id]?.quiz ?? 0);
+      progress[m.id] = { ...(progress[m.id] || {}), done: true, quiz: best }; saveProgress();
+      el.innerHTML = `
+        <div class="d-head"><p class="eyebrow">Quiz complete</p><button class="link-btn" data-act="quiz-exit" type="button">Back to the step</button></div>
+        <h1 class="d-title">${z.score} of ${qs.length} correct</h1>
+        <p class="subt">${z.score === qs.length ? 'Perfect score. Nicely done.' : 'Review the steps and try again any time.'}</p>
+        <div class="d-actions"><button class="btn" data-act="quiz" type="button">Try again</button>${next ? `<a class="btn primary" href="/m/${next.id}">Next: ${esc(next.name)}</a>` : ''}</div>`;
+      return;
+    }
+    const [q, opts, ans, why] = qs[z.i], picked = z.picked;
+    el.innerHTML = `
+      <div class="d-head"><p class="eyebrow">Question ${z.i + 1} of ${qs.length}</p><button class="link-btn" data-act="quiz-exit" type="button">Exit quiz</button></div>
+      <h1 class="d-title quiz-q">${fmt(q)}</h1>
+      <div class="quiz-opts" role="group" aria-label="Answers">${opts.map((o, i) => {
+        const cls = picked == null ? '' : i === ans ? ' right' : i === picked ? ' wrong' : ' dim';
+        return `<button class="quiz-opt${cls}" data-ans="${i}" type="button"${picked != null ? ' disabled' : ''}>${fmt(o)}</button>`;
+      }).join('')}</div>
+      ${picked != null ? `<div class="box${picked === ans ? '' : ' warn'}"><h2>${picked === ans ? 'Correct' : 'Not quite'}</h2><p>${fmt(why)}</p></div>
+      <button class="btn primary block" data-act="quiz-next" type="button">${z.i + 1 < qs.length ? 'Next question' : 'See your score'}</button>` : ''}`;
+    if (picked != null) $('#details [data-act="quiz-next"]')?.focus();
   }
 
   function rowHTML(p, isNew) {
@@ -475,6 +546,7 @@
   const trim = (s, n) => (s.length > n ? s.slice(0, Math.max(n - 1, 4)) + '…' : s);
 
   function refresh() {
+    if (st.mod && st.step === st.mod.steps.length - 1) markDone(st.mod.id);
     renderStepper(); renderDetails(); highlight(); updatePlay(); syncHash();
     if ($('#drawer').classList.contains('open')) renderDrawer();
   }
@@ -517,6 +589,7 @@
   }
   async function runStep(i) {
     const tok = ++st.token, m = st.mod;
+    st.quiz = null;
     const f = $('#fly'); if (f) f.innerHTML = '';
     const start = m.stepStart[i], end = m.stepStart[i + 1];
     st.step = i;
@@ -535,7 +608,7 @@
     if (i + 1 < m.steps.length) runStep(i + 1);
     else { st.playing = false; updatePlay(); }
   }
-  function showStepInstant(i) { stop(); st.step = i; st.shown = st.mod.stepStart[i + 1]; renderRows(); refresh(); }
+  function showStepInstant(i) { stop(); st.quiz = null; st.step = i; st.shown = st.mod.stepStart[i + 1]; renderRows(); refresh(); }
   function stop() { st.playing = false; st.token++; const f = $('#fly'); if (f) f.innerHTML = ''; updatePlay(); }
   function play() {
     const m = st.mod; if (!m) return;
@@ -582,12 +655,32 @@
     if (t.dataset.tab) { st.tab = t.dataset.tab; return renderDrawer(); }
     if (t.dataset.step !== undefined && st.mod) { closeDrawer(); return showStepInstant(+t.dataset.step); }
     if (t.dataset.view) return setView(t.dataset.view);
+    if (t.dataset.ans !== undefined && st.quiz) {
+      if (st.quiz.picked == null) {
+        st.quiz.picked = +t.dataset.ans;
+        if (st.quiz.picked === SE.quizzes[st.mod.id][st.quiz.i][2]) st.quiz.score++;
+      }
+      return renderDetails();
+    }
+    if (t.dataset.act === 'quiz') { stop(); st.quiz = { i: 0, picked: null, score: 0 }; return renderDetails(); }
+    if (t.dataset.act === 'quiz-next') { st.quiz.i++; st.quiz.picked = null; return renderDetails(); }
+    if (t.dataset.act === 'quiz-exit') { st.quiz = null; return renderDetails(); }
+    if (t.dataset.act === 'reset-progress') { t.dataset.act = 'reset-confirm'; t.textContent = 'Click again to reset all progress'; return; }
+    if (t.dataset.act === 'reset-confirm') { progress = {}; saveProgress(); return route(); }
     if (t.dataset.act === 'start') { st.shown = 0; return play(); }
-    if (t.dataset.act === 'overview') { stop(); st.step = -1; return refresh(); }
+    if (t.dataset.act === 'overview') { stop(); st.quiz = null; st.step = -1; return refresh(); }
     if (t.matches('tr.row.has-raw')) toggleRaw(t);
   });
   $('#rows').addEventListener('keydown', (e) => {
     if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr.has-raw')) { e.preventDefault(); toggleRaw(e.target); }
+  });
+  document.addEventListener('input', (e) => {
+    if (e.target.id !== 'glossFilter') return;
+    const q = e.target.value.trim().toLowerCase();
+    let shown = 0;
+    $$('.gloss-item').forEach((el) => { const hit = !q || el.dataset.text.includes(q); el.hidden = !hit; shown += hit; });
+    $$('.gloss-letter').forEach((h) => { h.hidden = !!q; });
+    $('.gloss-empty').hidden = shown > 0;
   });
   $('#drawerBtn').onclick = openDrawer;
   $('#closeDrawer').onclick = closeDrawer;
@@ -654,7 +747,10 @@
     route(); track();
   }
   if (location.hash.startsWith('#/')) history.replaceState(null, '', '/' + location.hash.slice(2).replace(/^\/+/, ''));
-  window.addEventListener('popstate', () => { route(); track(); });
+  window.addEventListener('popstate', () => {
+    if (location.pathname === lastPath && !location.hash.startsWith('#/')) return; // in-page #anchor jump
+    route(); track();
+  });
   route();
   track();
 })();
