@@ -11,3 +11,7 @@ node_modules/
 /404.html
 /sitemap.xml
 /robots.txt
+
+# Wrangler local state (contains account details)
+.wrangler/
+**/.wrangler/
