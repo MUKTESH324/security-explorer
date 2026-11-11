@@ -90,4 +90,7 @@ SE.glossary = [
   ['TGT (ticket-granting ticket)', 'The Kerberos ticket a user receives at logon and later exchanges for service tickets.', ['kerberos']],
   ['Threat hunting', 'Proactively searching for attackers that existing alerts haven\'t caught, starting from a hypothesis about their behaviour.', ['threat-hunting']],
   ['Just-in-time access', 'Granting elevated permissions only when needed, for a limited time, instead of permanently.', ['pam-jit']],
+  ['MCP (Model Context Protocol)', 'An open standard for connecting AI assistants to external tools and data through MCP servers, using JSON-RPC messages.', ['mcp-protocol', 'mcp-tool-poisoning']],
+  ['Tool poisoning', 'Hiding instructions for an AI model inside a tool\'s description or metadata, so the model misuses tools without the user noticing.', ['mcp-tool-poisoning']],
+  ['JSON-RPC', 'A simple format for remote procedure calls using JSON messages with a method, parameters and an id. MCP is built on JSON-RPC 2.0.', ['mcp-protocol']],
 ].map(([term, def, see]) => ({ term, def, see, id: term.toLowerCase().replace(/\(.*?\)/g, '').trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }));

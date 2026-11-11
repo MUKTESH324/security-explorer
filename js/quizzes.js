@@ -243,6 +243,16 @@ SE.quizzes = {
     ['How did the Markdown image leak data?', ['The browser loaded the image URL, sending data to an outside server', 'It ran JavaScript', 'It changed DNS'], 0, 'No click needed; the image request carried the data.'],
     ['Which control blocks that leak?', ['A CSP limiting img-src plus sanitised Markdown', 'Bigger models', 'HTTPS only'], 0, 'External images never load.'],
   ],
+  'mcp-protocol': [
+    ['What does an MCP server tell the host in `tools/list`?', ['Each tool\'s name, description and input schema', 'The user\'s password', 'The model\'s weights'], 0, 'The host passes these descriptions to the model so it knows what it can call.'],
+    ['Who actually sends the `tools/call` request?', ['The host (MCP client), after the model asks for it', 'The model connects to the server directly', 'The user\'s browser'], 0, 'The model only proposes a call; the host decides and makes it.'],
+    ['Why is a remote MCP server\'s access token bound to that server (its audience)?', ['So it can\'t be replayed against other APIs', 'To make it shorter', 'So it never expires'], 0, 'Token passthrough to other services is not allowed.'],
+  ],
+  'mcp-tool-poisoning': [
+    ['Where did the malicious instructions hide?', ['In the tool\'s description, which the model reads', 'In the TLS certificate', 'In the user\'s question'], 0, 'Tool metadata goes straight into the model\'s context.'],
+    ['How did a "weather" server get file contents it had no access to?', ['It instructed the model to use another, trusted tool and pass the result back', 'It hacked the file system', 'The user uploaded them'], 0, 'Cross-tool misuse: the model borrows another server\'s access.'],
+    ['Which host feature would have exposed the theft?', ['Approval prompts that show every argument in full', 'A dark theme', 'Faster responses'], 0, 'The secrets inside `notes` would have been visible before sending.'],
+  ],
   'ai-guardrails': [
     ['Which guardrails hold up best against evasion?', ['Deterministic ones: permissions, approvals, allow-lists', 'Clever prompt wording', 'Input classifiers alone'], 0, 'Classifiers help, but code-enforced rules don\'t get talked around.'],
     ['When should a human approve an AI action?', ['For high-impact actions like sharing, paying or deleting', 'Never', 'For every single message'], 0, 'Approvals belong where mistakes are costly.'],
