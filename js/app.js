@@ -282,7 +282,7 @@
         <p>IP addresses and domains in the examples come from ranges reserved for documentation, so they don't point at anyone's real systems.</p>
 
         <h2>Privacy</h2>
-        <p>No accounts, analytics, ads or cookies. The only thing stored is your light/dark theme choice, in your own browser.</p>      </article>`;
+        <p>No accounts, ads or cookies. Visits are counted anonymously with <a href="https://www.goatcounter.com/" ${ext}>GoatCounter</a>, which doesn't use cookies or collect personal data. The only thing stored in your browser is your light/dark theme choice.</p>      </article>`;
   }
 
   const notFoundHTML = () => `
@@ -627,6 +627,21 @@
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   initChrome();
   updatePlay();
-  window.addEventListener('hashchange', route);
+  // Cookieless page counts (GoatCounter). Steps share their module's path.
+  let lastCounted = '';
+  function track() {
+    const path = '/' + location.hash.replace(/^#\/?/, '').replace(/^(m\/[^/]+)\/\d+$/, '$1');
+    if (path === lastCounted) return;
+    const send = () => {
+      if (!window.goatcounter || !window.goatcounter.count) return;
+      lastCounted = path;
+      window.goatcounter.count({ path, title: document.title });
+    };
+    if (window.goatcounter && window.goatcounter.count) send();
+    else window.addEventListener('load', send, { once: true });
+  }
+
+  window.addEventListener('hashchange', () => { route(); track(); });
   route();
+  track();
 })();
