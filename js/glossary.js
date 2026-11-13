@@ -102,4 +102,9 @@ SE.glossary = [
   ['MASTG', 'OWASP Mobile Application Security Testing Guide. Explains how to test mobile apps against each MASVS control.', ['masvs']],
   ['Keystore / Keychain', 'The secure storage built into Android (Keystore) and iOS (Keychain) for keys and secrets, often backed by hardware.', ['masvs']],
   ['Certificate pinning', 'Making an app accept only a specific certificate or public key for its server, so a different trusted certificate can\'t be used to intercept traffic.', ['masvs']],
+  ['PASTA', 'Process for Attack Simulation and Threat Analysis. A seven-stage, risk-centric threat modelling method that ranks threats by business impact.', ['pasta']],
+  ['LINDDUN', 'A privacy threat modelling method: Linking, Identifying, Non-repudiation, Detecting, Data disclosure, Unawareness & unintervenability, Non-compliance.', ['linddun']],
+  ['Attack tree', 'A diagram with the attacker\'s goal at the root and the ways to reach it as AND/OR branches, used to find the most likely attack paths.', ['attack-trees', 'pasta']],
+  ['DREAD', 'An older scheme for rating threats (Damage, Reproducibility, Exploitability, Affected users, Discoverability). Rarely recommended today because scores are subjective.', ['threat-modeling']],
+  ['Privacy by design', 'Building privacy protections such as data minimisation and private defaults into a system from the start.', ['linddun']],
 ].map(([term, def, see]) => ({ term, def, see, id: term.toLowerCase().replace(/\(.*?\)/g, '').trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }));

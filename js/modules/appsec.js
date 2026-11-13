@@ -4,8 +4,8 @@ SE.register({
   id: 'threat-modeling', domain: 'appsec', kind: 'defense', level: 'Beginner', severity: 'Process',
   name: 'Threat Modelling (STRIDE)', full: 'Finding design flaws before writing code',
   tags: ['threat modeling', 'threat modelling', 'stride', 'data flow diagram', 'dfd', 'trust boundary', 'secure design', 'appsec', 'sdlc'],
-  summary: 'Threat modelling is a structured way to ask "what could go wrong?" while a feature is still being designed, when fixes are cheapest. You draw how data flows, mark where trust changes, walk each flow through the STRIDE categories, and turn the answers into concrete requirements and tests.',
-  facts: [['Four questions', 'What are we building? What can go wrong? What will we do? Did we do a good job?'], ['Model', 'Data flow diagram + trust boundaries'], ['Threat categories', 'STRIDE'], ['Other methods', 'PASTA, LINDDUN (privacy), attack trees'], ['Free tools', 'OWASP Threat Dragon, Microsoft TM Tool'], ['Relates to', 'OWASP A04 Insecure Design']],
+  summary: 'Threat modelling is a structured way to ask "what could go wrong?" while a feature is still being designed, when fixes are cheapest. You draw how data flows, mark where trust changes, walk each flow through the STRIDE categories, and turn the answers into concrete requirements and tests. STRIDE is the most widely used method; PASTA (risk-centric), LINDDUN (privacy) and attack trees (attack paths) are covered in their own modules.',
+  facts: [['Four questions', 'What are we building? What can go wrong? What will we do? Did we do a good job?'], ['Model', 'Data flow diagram + trust boundaries'], ['Threat categories', 'STRIDE'], ['Other methods', 'PASTA, LINDDUN, attack trees, OCTAVE, VAST, Trike'], ['Free tools', 'OWASP Threat Dragon, Microsoft TM Tool'], ['Relates to', 'OWASP A04 Insecure Design']],
   defenses: [
     'Model each new feature or big change during design, not after release',
     'Keep the diagram simple: processes, data stores, external entities, flows and trust boundaries',
@@ -80,6 +80,232 @@ SE.register({
 | 5 | App → Gateway     | D      | Order flooding                 | Mitigate | SEC-103 |
 | 6 | App → Admin API   | E      | Customer reaches refund route  | Mitigate | SEC-106 |
 | 7 | Orders → Payments | D      | Provider outage                | Accept   | (doc)   |`],
+      ],
+    },
+  ],
+});
+
+SE.register({
+  id: 'pasta', domain: 'appsec', kind: 'defense', level: 'Advanced', severity: 'Process',
+  name: 'Threat Modelling (PASTA)', full: 'Risk-centric threat modelling in seven stages',
+  tags: ['pasta', 'threat modeling', 'threat modelling', 'risk', 'attack simulation', 'business impact', 'appsec'],
+  summary: 'PASTA (Process for Attack Simulation and Threat Analysis) is a risk-centric method. Where STRIDE asks "what kinds of things can go wrong?", PASTA starts from business goals, studies how real attackers operate, simulates their attacks against your design, and ranks threats by business impact. It takes more effort and suits high-value systems.',
+  facts: [['Full name', 'Process for Attack Simulation and Threat Analysis'], ['Authors', 'Tony UcedaVélez & Marco Morana (2015)'], ['Stages', '7, from business objectives to risk'], ['Focus', 'Attacker view + business impact'], ['Best for', 'High-value, regulated systems'], ['Compared with STRIDE', 'Heavier, more risk-driven']],
+  defenses: [
+    'Involve business owners early: impact on the business drives the ranking',
+    'Use real threat intelligence for the attacker view, not guesses',
+    'Map threats to concrete weaknesses (CWE) and to attack techniques (ATT&CK)',
+    'Simulate attacks with attack trees or tests to see which ones actually work',
+    'Feed the ranked risks into the backlog and the risk register',
+  ],
+  nodes: [
+    { id: 'biz', type: 'user', label: 'Business Owner', sub: 'payments product', x: 120, y: 120 },
+    { id: 'tm', type: 'user', label: 'Threat Modeller', sub: 'security team', x: 120, y: 380, good: true },
+    { id: 'app', type: 'server', label: 'Payments Platform', sub: 'web + API', x: 450, y: 245 },
+    { id: 'ti', type: 'cloud', label: 'Threat Intel', sub: 'attacker behaviour', x: 780, y: 120 },
+    { id: 'atk', type: 'attacker', label: 'Fraud Group', sub: 'simulated', x: 780, y: 380 },
+  ],
+  steps: [
+    {
+      title: 'Stage 1: Business objectives', sub: 'What must not go wrong?',
+      text: 'The modeller starts with the business, not the technology. For a payments platform: no fraudulent transfers, stay compliant with PCI DSS, and keep the service available during peak hours. These goals decide later what counts as a high risk.',
+      fields: [['Objectives', 'No fraud, PCI DSS compliance, 99.95% uptime'], ['Impact of failure', 'Financial loss, fines, reputation']],
+      packets: [
+        ['biz', 'tm', 'Workshop', 'Business goals, compliance needs, risk appetite', 900, 'ctl'],
+      ],
+    },
+    {
+      title: 'Stage 2: Technical scope', sub: 'What is in the system?',
+      text: 'Next the team lists the technology in scope: web front end, transfer API, database, third-party fraud scoring service and the cloud platform underneath, along with versions and dependencies.',
+      fields: [['Components', 'Web app, transfer API, DB, fraud API, cloud'], ['Out of scope', 'Corporate email, HR systems']],
+      packets: [
+        ['tm', 'app', 'Inventory', 'List components, frameworks, versions, dependencies', 600, 'req'],
+        ['app', 'tm', 'Inventory', 'Architecture + dependency list', 4000, 'res'],
+      ],
+    },
+    {
+      title: 'Stage 3: Decompose the application', sub: 'Data flows and trust boundaries',
+      text: 'Just as in STRIDE, the team draws data flow diagrams, marking entry points, trust boundaries, roles and the most valuable data: account balances and transfer approvals.',
+      fields: [['Entry points', 'Login, transfer API, webhook from fraud service'], ['Crown jewels', 'Transfer approval, balances']],
+      packets: [
+        ['tm', 'tm', 'DFD', 'Entry points, trust boundaries, assets', 0, 'ctl'],
+      ],
+    },
+    {
+      title: 'Stage 4: Threat analysis', sub: 'Who attacks systems like ours, and how?',
+      text: 'Using threat intelligence, the team looks at how real groups attack payment systems: account takeover with stolen passwords, abuse of transfer limits, and fake "beneficiary change" requests. This grounds the model in what actually happens.',
+      fields: [['Threat actors', 'Fraud groups, insiders'], ['Common techniques', 'Account takeover, business logic abuse']],
+      packets: [
+        ['tm', 'ti', 'Query', 'Attacks against payment platforms, last 12 months', 300, 'req'],
+        ['ti', 'tm', 'Report', 'Credential stuffing, limit abuse, beneficiary fraud', 9000, 'res'],
+      ],
+    },
+    {
+      title: 'Stage 5: Weakness analysis', sub: 'Where are we exposed?',
+      text: 'The team matches those threats to weaknesses in this system, from pen-test results, code scans and design review: no limit on how often a beneficiary can be changed, and MFA is skipped for transfers under a threshold.',
+      fields: [['Weakness 1', 'Beneficiary changes not rate-limited (CWE-799)'], ['Weakness 2', 'No step-up auth below threshold (CWE-306)']],
+      packets: [
+        ['tm', 'app', 'Review', 'Map threats to findings: scans, pen test, design', 800, 'req'],
+        ['app', 'tm', 'Review', '2 relevant weaknesses found', 1200, 'atk'],
+      ],
+    },
+    {
+      title: 'Stage 6: Attack modelling', sub: 'Simulate the attack',
+      text: 'The team builds attack trees and simulates the most likely path in a test environment: log in with a stolen password, add a new beneficiary, then send many small transfers just under the MFA threshold. The simulation succeeds.',
+      fields: [['Path', 'Stolen login → new beneficiary → small transfers'], ['Result in test', 'Succeeded']],
+      packets: [
+        ['atk', 'app', 'Simulated', 'Login with stolen credentials', 900, 'atk'],
+        ['atk', 'app', 'Simulated', 'Add beneficiary + 20 transfers of 490 (limit 500)', 18000, 'atk'],
+        ['app', 'atk', 'Simulated', 'All accepted', 4000, 'atk'],
+      ],
+    },
+    {
+      title: 'Stage 7: Risk and impact', sub: 'Rank by business impact',
+      text: 'Finally each threat is scored by likelihood and business impact and compared with the objectives from stage 1. The simulated fraud path is ranked critical, so step-up authentication on new beneficiaries and cumulative transfer limits go to the top of the backlog.',
+      fields: [['Top risk', 'Fraud via small transfers: critical'], ['Fix', 'Step-up auth for new beneficiaries, cumulative limits']],
+      defend: 'PASTA takes days rather than hours. Use it where the business impact justifies the effort, and lighter methods like STRIDE everywhere else.',
+      packets: [
+        ['tm', 'biz', 'Report', 'Ranked risks with business impact and fixes', 15000, 'def'],
+        ['biz', 'tm', 'Decision', 'Approve fixes for top 3 risks this quarter', 300, 'def'],
+      ],
+    },
+  ],
+});
+
+SE.register({
+  id: 'linddun', domain: 'appsec', kind: 'defense', level: 'Intermediate', severity: 'Process',
+  name: 'Privacy Threat Modelling (LINDDUN)', full: 'Finding privacy threats, not just security ones',
+  tags: ['linddun', 'privacy', 'threat modeling', 'threat modelling', 'gdpr', 'privacy by design', 'data minimisation', 'appsec'],
+  summary: 'A system can be perfectly secure and still harm people\'s privacy. LINDDUN, from KU Leuven, is a threat modelling method focused on privacy. It uses the same data flow diagrams as STRIDE but walks them through seven privacy threat categories.',
+  facts: [['From', 'KU Leuven (DistriNet)'], ['Categories', 'Linking, Identifying, Non-repudiation, Detecting, Data disclosure, Unawareness & unintervenability, Non-compliance'], ['Model', 'Data flow diagram'], ['Variants', 'LINDDUN GO (cards), PRO, MAESTRO'], ['Supports', 'GDPR privacy by design'], ['Pairs with', 'STRIDE for security threats']],
+  defenses: [
+    'Collect only the data a feature truly needs, and delete it when it\'s no longer needed',
+    'Use pseudonyms or aggregate data wherever individual identity isn\'t required',
+    'Make data sharing visible and give people real choices and controls',
+    'Keep third parties from receiving identifiers they don\'t need',
+    'Document the legal basis and retention period for each type of personal data',
+  ],
+  nodes: [
+    { id: 'app', type: 'phone', label: 'Fitness App', sub: 'runs + GPS', x: 120, y: 245 },
+    { id: 'be', type: 'server', label: 'App Backend', sub: 'profiles + routes', x: 450, y: 245 },
+    { id: 'an', type: 'cloud', label: 'Analytics SDK', sub: 'third party', x: 780, y: 100 },
+    { id: 'feed', type: 'browser', label: 'Public Feed', sub: 'other users', x: 780, y: 390 },
+    { id: 'db', type: 'db', label: 'Activity Store', sub: '5 years of runs', x: 450, y: 420 },
+  ],
+  steps: [
+    {
+      title: 'Linking and Identifying', sub: 'L and I of LINDDUN',
+      text: 'The app shares every run on a public feed with a username and the full GPS route. Routes that always start at the same point reveal where someone lives (Identifying), and the same advertising ID sent to the analytics SDK lets it connect the person across apps (Linking).',
+      fields: [['Identifying', 'Run start point = home address'], ['Linking', 'Advertising ID shared with analytics']],
+      packets: [
+        ['be', 'feed', 'HTTPS', 'Public run: full GPS route starting at home', 24000, 'data'],
+        ['app', 'an', 'HTTPS', 'Event + advertising ID + device model', 1400, 'data'],
+      ],
+    },
+    {
+      title: 'Non-repudiation and Detecting', sub: 'N and D of LINDDUN',
+      text: 'Sometimes being unable to deny something is a privacy harm: signed, permanent records of where someone was can be used against them (Non-repudiation). And simply seeing that a user has a "heart condition" training plan reveals something sensitive, even without reading the data (Detecting).',
+      fields: [['Non-repudiation', 'Permanent signed location history'], ['Detecting', 'Plan type reveals health condition']],
+      packets: [
+        ['be', 'db', 'Store', 'Signed run records kept for 5 years', 900000, 'data'],
+        ['app', 'an', 'HTTPS', 'event: joined "cardiac rehab" plan', 600, 'data'],
+      ],
+    },
+    {
+      title: 'Data disclosure', sub: 'D of LINDDUN',
+      text: 'More personal data is collected and shared than the feature needs: exact birth date, precise location every second, and heart-rate data sent to the analytics provider.',
+      fields: [['Needed', 'Distance, pace, rough area'], ['Collected', 'Birth date, 1 s GPS, heart rate to third party']],
+      packets: [
+        ['app', 'an', 'HTTPS', 'Heart-rate samples to analytics (not needed)', 32000, 'atk'],
+      ],
+    },
+    {
+      title: 'Unawareness and Non-compliance', sub: 'U and N of LINDDUN',
+      text: 'Users don\'t know routes are public by default and can\'t easily delete old runs (Unawareness and unintervenability). Keeping health and location data for five years without a clear purpose or consent also breaks data-protection law (Non-compliance).',
+      fields: [['Unawareness', 'Public by default, no delete-all option'], ['Non-compliance', 'Health data without explicit consent, long retention']],
+      packets: [
+        ['be', 'feed', 'HTTPS', 'Default visibility: public', 300, 'atk'],
+      ],
+    },
+    {
+      title: 'Privacy by design', sub: 'Turning threats into fixes',
+      text: 'The fixes: routes are private by default, start and end points are hidden around home, the analytics SDK gets no identifiers or health data, sensitive data needs explicit consent, and old activity is deleted after a set period, with a "delete all my data" button.',
+      fields: [['Default', 'Private, home zone hidden'], ['Analytics', 'Aggregated, no IDs or health data'], ['Retention', '24 months, user can delete anytime']],
+      defend: 'Run LINDDUN alongside STRIDE: one finds security threats, the other finds privacy threats, from the same diagram.',
+      packets: [
+        ['be', 'feed', 'HTTPS', 'Shared run: private by default, home zone trimmed', 9000, 'def'],
+        ['app', 'an', 'HTTPS', 'Aggregated usage counts only', 300, 'def'],
+        ['be', 'db', 'Job', 'Delete activity older than 24 months', 0, 'def'],
+      ],
+    },
+  ],
+});
+
+SE.register({
+  id: 'attack-trees', domain: 'appsec', kind: 'defense', level: 'Intermediate', severity: 'Process',
+  name: 'Attack Trees', full: 'Mapping every path to an attacker\'s goal',
+  tags: ['attack tree', 'attack trees', 'threat modeling', 'threat modelling', 'and or', 'attack path', 'risk', 'appsec'],
+  summary: 'An attack tree puts the attacker\'s goal at the root and breaks it down into the different ways to reach it. OR branches mean "any one of these works", AND branches mean "all of these are needed". Adding cost or difficulty to each leaf shows the cheapest path, which is where defenses matter most.',
+  facts: [['Popularised by', 'Bruce Schneier (1999)'], ['Root', 'Attacker\'s goal'], ['Branches', 'OR (any) and AND (all)'], ['Leaves annotated with', 'Cost, skill, likelihood'], ['Used in', 'PASTA stage 6, safety and security analysis'], ['Pairs with', 'STRIDE, MITRE ATT&CK']],
+  defenses: [
+    'Start from a goal that matters to the business, such as "take over a customer account"',
+    'Keep breaking branches down until each leaf is a concrete action',
+    'Annotate leaves with cost or difficulty and find the cheapest complete path',
+    'Defend the cheapest paths first, then recalculate',
+    'Reuse trees for common goals and update them as attacks change',
+  ],
+  nodes: [
+    { id: 'atk', type: 'attacker', label: 'Attacker', sub: 'goal: take over account', x: 120, y: 245 },
+    { id: 'login', type: 'browser', label: 'Login Page', sub: 'password', x: 450, y: 100 },
+    { id: 'mail', type: 'mail', label: 'Phishing Email', sub: 'fake sign-in', x: 450, y: 245 },
+    { id: 'help', type: 'user', label: 'Help Desk', sub: 'resets MFA', x: 450, y: 400 },
+    { id: 'idp', type: 'idp', label: 'Identity Provider', sub: 'password + MFA', x: 780, y: 245, good: true },
+  ],
+  steps: [
+    {
+      title: 'Set the goal', sub: 'The root of the tree',
+      text: 'The root is what the attacker wants: "take over a customer account". To log in, they need two things, a password AND a way past MFA, so the root has an AND branch with two children.',
+      fields: [['Root', 'Take over a customer account'], ['Root branch', 'AND: password + get past MFA']],
+      packets: [
+        ['atk', 'idp', 'Goal', 'Sign in as the victim (needs password AND MFA)', 0, 'ctl'],
+      ],
+    },
+    {
+      title: 'Branch 1: get the password', sub: 'OR: any one works',
+      text: 'There are several ways to get a password, and any one is enough, so this is an OR branch: phish the user, reuse a password leaked from another site (credential stuffing), or install malware on their device.',
+      fields: [['OR', 'Phishing · credential stuffing · malware'], ['Cheapest', 'Credential stuffing (low cost)']],
+      packets: [
+        ['atk', 'mail', 'Path', 'Phishing email with fake sign-in page', 3000, 'atk'],
+        ['atk', 'login', 'Path', 'Try passwords leaked from other breaches', 90000, 'atk'],
+      ],
+    },
+    {
+      title: 'Branch 2: get past MFA', sub: 'OR: any one works',
+      text: 'To defeat MFA the attacker could flood the user with push prompts, take over their phone number (SIM swap), or call the help desk pretending to be the user and ask them to reset MFA.',
+      fields: [['OR', 'Push fatigue · SIM swap · help-desk reset'], ['Cheapest', 'Help-desk social engineering']],
+      packets: [
+        ['atk', 'idp', 'Path', 'Push bombing until approved', 16000, 'atk'],
+        ['atk', 'help', 'Path', '"I lost my phone, please reset my MFA"', 800, 'atk'],
+      ],
+    },
+    {
+      title: 'Find the cheapest path', sub: 'Annotate the leaves',
+      text: 'Each leaf gets a rough cost and skill level. Combining the cheapest option from each AND child gives the most likely attack: reused password plus a help-desk MFA reset. That single path is where defending pays off most.',
+      fields: [['Cheapest path', 'Credential stuffing AND help-desk reset'], ['Estimated cost', 'Low; no special skills']],
+      packets: [
+        ['atk', 'login', 'Path', 'Leaked password works', 600, 'atk'],
+        ['help', 'idp', 'Path', 'MFA reset for "the user"', 400, 'atk'],
+        ['atk', 'idp', 'Path', 'Signed in as victim', 1200, 'atk'],
+      ],
+    },
+    {
+      title: 'Prune the tree', sub: 'Defend, then recalculate',
+      text: 'The team blocks breached passwords and rate-limits logins, and makes the help desk verify identity strongly before any MFA reset. Those branches become expensive, so the next-cheapest path is recalculated, and passkeys are planned to close the MFA branch entirely.',
+      fields: [['Fixes', 'Breached-password check, verified MFA resets'], ['New cheapest path', 'Phishing + push fatigue (harder)'], ['Next', 'Passkeys']],
+      defend: 'Attack trees work well with other methods: use STRIDE to find threats, and attack trees to see which combinations are realistic.',
+      packets: [
+        ['atk', 'login', 'Path', 'Leaked password → rejected (breached list)', 300, 'def'],
+        ['help', 'atk', 'Path', 'MFA reset denied: identity not verified', 300, 'def'],
       ],
     },
   ],

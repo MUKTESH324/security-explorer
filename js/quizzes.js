@@ -265,6 +265,21 @@ SE.quizzes = {
     ['What does the "T" in STRIDE stand for?', ['Tampering', 'Tracking', 'Timeout'], 0, 'Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege.'],
     ['Where should you look hardest for threats?', ['Data flows that cross a trust boundary', 'Comments in the code', 'The colour scheme'], 0, 'Crossing from less-trusted to more-trusted is where checks are needed.'],
   ],
+  pasta: [
+    ['What makes PASTA different from STRIDE?', ['It is risk-centric: it starts from business objectives and ranks threats by business impact', 'It only covers privacy', 'It needs no diagrams'], 0, 'PASTA ties every threat back to what the business cares about.'],
+    ['How many stages does PASTA have?', ['Seven', 'Three', 'Twelve'], 0, 'From business objectives to risk and impact analysis.'],
+    ['What happens in the attack modelling stage?', ['Likely attacks are simulated, often using attack trees', 'The code is rewritten', 'Logs are deleted'], 0, 'Simulation shows which attack paths actually work.'],
+  ],
+  linddun: [
+    ['What kind of threats does LINDDUN focus on?', ['Privacy threats', 'Network outages', 'Hardware failures'], 0, 'It complements security methods like STRIDE.'],
+    ['Why can a run that always starts at the same place be a privacy threat?', ['It can reveal where the person lives (identifying)', 'It makes the app slower', 'It breaks GPS'], 0, 'Seemingly harmless data can identify people.'],
+    ['Which fix supports privacy by design?', ['Private by default and collecting only what is needed', 'Sharing more data with analytics', 'Keeping all data forever'], 0, 'Defaults and data minimisation matter most.'],
+  ],
+  'attack-trees': [
+    ['What does an OR branch in an attack tree mean?', ['Any one of the children is enough', 'All children are needed', 'The branch is optional for defenders'], 0, 'AND branches need every child.'],
+    ['Why annotate leaves with cost or difficulty?', ['To find the cheapest, most likely attack path', 'To make the tree longer', 'To hide the root goal'], 0, 'Defend the cheapest paths first.'],
+    ['In the example, what was the cheapest way past MFA?', ['Tricking the help desk into resetting it', 'Breaking the encryption', 'Guessing the code'], 0, 'People and processes are often the weakest branch.'],
+  ],
   asvs: [
     ['What is OWASP ASVS?', ['A list of security requirements for verifying web apps and APIs', 'A web application firewall', 'A vulnerability scanner'], 0, 'It defines what to build and what to test.'],
     ['Which ASVS level suits most apps that handle sensitive data?', ['Level 2', 'Level 1', 'Level 3'], 0, 'L1 is the baseline, L3 is for the most critical systems.'],
