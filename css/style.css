@@ -620,7 +620,7 @@ body[data-view="explorer"] .site-footer { margin-top: 0; }
 
 /* ===== Wide-screen polish ===== */
 @media (min-width: 1400px) {
-  .wrap { max-width: 1320px; padding: 0 32px; }
+  .wrap { max-width: 1320px; padding-left: 32px; padding-right: 32px; }
 }
 /* Subtle background texture in the side margins (fades out behind content) */
 body::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
