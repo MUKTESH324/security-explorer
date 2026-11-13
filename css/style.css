@@ -44,7 +44,8 @@ html, body { margin: 0; }
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: 80px; }
 body { background: var(--bg); color: var(--text); font: 15px/1.6 var(--sans); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 body.no-scroll { overflow: hidden; }
-main { flex: 1; }
+main { flex: 1 0 auto; }
+.site-header, .site-footer { flex-shrink: 0; }
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 3px; }
 h1, h2, h3 { line-height: 1.25; letter-spacing: -0.015em; margin: 0; font-weight: 650; }
