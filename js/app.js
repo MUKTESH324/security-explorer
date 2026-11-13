@@ -86,7 +86,7 @@
     lastPath = location.pathname;
     const parts = location.pathname.split('/').filter(Boolean);
     const [a, b, c] = parts;
-    if (!a) return showPage(homeHTML(), '', 'home');
+    if (!a) { showPage(homeHTML(), '', 'home'); return startShowcase(); }
     if (a === 'modules') {
       if (b && !LIVE.some((d) => d.id === b)) return showPage(notFoundHTML(), 'Not found');
       return showPage(catalogHTML(b), b ? domainOf(b).name : 'Modules', 'modules');
@@ -133,7 +133,7 @@
           <h1>${title}</h1>
           ${lead ? `<p class="lead">${lead}</p>` : ''}${extra}
         </div>
-        ${art ? `<div class="hero-art" aria-hidden="true"><span class="ring r1"></span><span class="ring r2"></span><span class="tile"><svg viewBox="0 0 48 48">${icon(art)}</svg></span></div>` : ''}
+        ${art && art.scene ? `<div class="hero-scene" style="--tc:${toneOf(art.scene)}">${topicArt(art.scene)}</div>` : art ? `<div class="hero-art" aria-hidden="true"><span class="ring r1"></span><span class="ring r2"></span><span class="tile"><svg viewBox="0 0 48 48">${icon(art)}</svg></span></div>` : ''}
       </div></header>`;
 
   const siteStats = () => ({
@@ -248,6 +248,8 @@
 
       </div></section>
 
+      ${showcaseHTML()}
+
       <section class="section">
         <div class="section-head"><h2>Learning paths</h2><a href="/paths">See all paths</a></div>
         <div class="grid-3">${SE.paths.slice(0, 3).map(pathCard).join('')}</div>
@@ -256,7 +258,7 @@
       <section class="band bleed"><div class="wrap">
       <section class="section">
         <div class="section-head"><h2>Browse by topic</h2><a href="/modules">All modules</a></div>
-        <div class="topics">${LIVE.map(topicRow).join('')}</div>
+        <div class="topic-cards">${LIVE.map(topicRow).join('')}</div>
       </section>
       </div></section>
 
@@ -295,6 +297,93 @@
     return h + '</svg>';
   }
 
+
+  /* ---------- topic illustrations ---------- */
+  // Each topic gets a small scene: a central icon linked to three related icons,
+  // with packets travelling along the links. Colours come from --tc on the parent.
+  const TOPIC_SCENES = {
+    protocols: ['dns', 'client', 'router', 'server'],
+    web: ['browser', 'attacker', 'db', 'shield'],
+    api: ['api', 'phone', 'gateway', 'server'],
+    appsec: ['repo', 'doc', 'cert', 'shield'],
+    pentest: ['shell', 'browser', 'phone', 'doc'],
+    network: ['router', 'switch', 'wifi', 'attacker'],
+    identity: ['idp', 'user', 'phone', 'lock'],
+    crypto: ['lock', 'client', 'cert', 'server'],
+    cloud: ['cloud', 'bucket', 'container', 'lock'],
+    threats: ['attacker', 'mail', 'c2', 'workstation'],
+    defense: ['shield', 'firewall', 'ids', 'siem'],
+    soc: ['siem', 'user', 'workstation', 'c2'],
+    ai: ['ai', 'user', 'doc', 'gateway'],
+  };
+  const TOPIC_TONES = { protocols: '#3b82f6', web: '#e5484d', api: '#8b5cf6', appsec: '#10b981', pentest: '#f59e0b', network: '#06b6d4',
+    identity: '#6366f1', crypto: '#14b8a6', cloud: '#0ea5e9', threats: '#ef4444', defense: '#22c55e', soc: '#2563eb', ai: '#d946ef' };
+  const toneOf = (id) => TOPIC_TONES[id] || '#3b82f6';
+  function topicArt(id) {
+    const [c, a, b, d] = TOPIC_SCENES[id] || ['shield', 'client', 'server', 'lock'];
+    const pts = [[62, 46, a], [62, 118, b], [262, 82, d]];
+    const tile = (x, y, ic, big) => {
+      const s = big ? 60 : 42, r = big ? 16 : 11, k = big ? 34 : 24;
+      return `<g class="ta-node${big ? ' main' : ''}"><rect x="${x - s / 2}" y="${y - s / 2}" width="${s}" height="${s}" rx="${r}"/>
+        <svg x="${x - k / 2}" y="${y - k / 2}" width="${k}" height="${k}" viewBox="0 0 48 48">${icon(ic)}</svg></g>`;
+    };
+    let h = '<svg class="topic-art" viewBox="0 0 320 164" aria-hidden="true">';
+    h += '<circle class="ta-ring" cx="160" cy="82" r="58"/><circle class="ta-ring dash" cx="160" cy="82" r="78"/>';
+    pts.forEach(([x, y], i) => {
+      h += `<line class="ta-link" x1="${x}" y1="${y}" x2="160" y2="82"/>`;
+      h += `<circle class="ta-pkt" r="3.5"><animateMotion dur="${2.6 + i * 0.7}s" begin="${i * 0.6}s" repeatCount="indefinite" path="M${x} ${y} L160 82"/></circle>`;
+    });
+    pts.forEach(([x, y, ic]) => { h += tile(x, y, ic, false); });
+    h += tile(160, 82, c, true);
+    return h + '</svg>';
+  }
+
+  /* ---------- featured walkthroughs (home) ---------- */
+  const FEATURED = ['sqli', 'oauth-pkce', 'mcp-tool-poisoning', 'threat-hunting', 'tls13', 'burp-workflow'].filter((id) => byId[id]);
+  let featTimer = 0, featIdx = 0;
+  function showcasePanel(m) {
+    const si = Math.min(Math.floor(m.steps.length / 2), m.steps.length - 1);
+    const d = domainOf(m.domain);
+    return `<a class="preview showcase-preview" href="/m/${m.id}/${si + 1}">
+        <div class="preview-top"><span class="dots"><i></i><i></i><i></i></span><span>${esc(m.name)}</span></div>
+        ${previewSVG(m, si)}
+        <div class="preview-cap"><span>Step ${si + 1} of ${m.steps.length}</span><b>${esc(m.steps[si].title)}</b></div>
+      </a>
+      <div class="showcase-info">
+        <div class="mcard-meta">${kindTag(m)}<span>${esc(d.name)}</span></div>
+        <h3>${esc(m.name)}</h3>
+        <p class="showcase-full">${esc(m.full)}</p>
+        <p class="muted">${fmt(m.summary)}</p>
+        <ol class="showcase-steps">${m.steps.map((x) => `<li>${esc(x.title)}</li>`).join('')}</ol>
+        <div class="hero-actions"><a class="btn primary" href="/m/${m.id}">Start this module</a><span class="muted small">${esc(m.level)} · ${m.steps.length} steps · ${minutes(m)} min</span></div>
+      </div>`;
+  }
+  function showcaseHTML() {
+    if (!FEATURED.length) return '';
+    return `<section class="section showcase">
+        <div class="section-intro"><p class="eyebrow">Featured walkthroughs</p><h2>Pick a scenario and press play</h2>
+          <p class="lead">A taste of what's inside, from classic web attacks to securing AI agents.</p></div>
+        <div class="showcase-tabs" role="tablist" aria-label="Featured modules">${FEATURED.map((id, i) => `<button type="button" role="tab" class="chip${i === 0 ? ' on' : ''}" data-feature="${id}" aria-selected="${i === 0}">${esc(byId[id].name)}</button>`).join('')}</div>
+        <div id="showcase" class="showcase-panel" role="tabpanel">${showcasePanel(byId[FEATURED[0]])}</div>
+      </section>`;
+  }
+  function selectFeature(id) {
+    const box = $('#showcase'); if (!box || !byId[id]) return;
+    featIdx = FEATURED.indexOf(id);
+    $$('.showcase-tabs [data-feature]').forEach((b) => { const on = b.dataset.feature === id; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+    box.innerHTML = showcasePanel(byId[id]);
+  }
+  function startShowcase() {
+    clearInterval(featTimer); featIdx = 0;
+    if (!$('#showcase') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    featTimer = setInterval(() => {
+      const box = $('#showcase');
+      if (!box) return clearInterval(featTimer);
+      if (box.closest('.showcase').matches(':hover')) return;
+      selectFeature(FEATURED[(featIdx + 1) % FEATURED.length]);
+    }, 9000);
+  }
+
   function pathCard(p) {
     const ms = pathMods(p);
     return `<a class="card path-card" href="/paths/${p.id}">
@@ -306,10 +395,10 @@
   }
   function topicRow(d) {
     const n = modsIn(d.id).length;
-    return `<a class="topic" href="/modules/${d.id}">
-      <span class="topic-ico"><svg viewBox="0 0 48 48" aria-hidden="true">${icon(d.icon)}</svg></span>
-      <span class="topic-text"><b>${esc(d.name)}</b><small>${esc(d.blurb)}</small></span>
-      <span class="topic-count">${n} module${n === 1 ? '' : 's'}</span>
+    return `<a class="topic-card" href="/modules/${d.id}" style="--tc:${toneOf(d.id)}">
+      <span class="topic-card-art">${topicArt(d.id)}</span>
+      <span class="topic-card-body"><b>${esc(d.name)}</b><small>${esc(d.blurb)}</small>
+        <span class="topic-card-foot">${n} module${n === 1 ? '' : 's'} <span aria-hidden="true">→</span></span></span>
     </a>`;
   }
   function mcard(m) {
@@ -325,7 +414,7 @@
     const d = dom && domainOf(dom);
     const list = MODS.filter((m) => (!dom || m.domain === dom) && (st.level === 'all' || m.level === st.level));
     return `
-      ${pageHero(`<a href="/">Home</a> / ${d ? '<a href="/modules">Modules</a> / ' : ''}<span>${d ? esc(d.name) : 'Modules'}</span>`, d ? esc(d.name) : 'All modules', d ? esc(d.blurb) : `${MODS.length} interactive walkthroughs across ${LIVE.length} topics. Pick one, press play.`, '', d ? d.icon : 'shield')}
+      ${pageHero(`<a href="/">Home</a> / ${d ? '<a href="/modules">Modules</a> / ' : ''}<span>${d ? esc(d.name) : 'Modules'}</span>`, d ? esc(d.name) : 'All modules', d ? esc(d.blurb) : `${MODS.length} interactive walkthroughs across ${LIVE.length} topics. Pick one, press play.`, '', d ? { scene: d.id } : 'shield')}
       <div class="filters">
         <div class="filter-row" role="group" aria-label="Topic">
           <a class="chip ${!dom ? 'on' : ''}" href="/modules">All topics</a>
@@ -873,6 +962,7 @@
     }
     const t = e.target.closest('button, a, tr.row');
     if (!t) return;
+    if (t.dataset.feature) { clearInterval(featTimer); return selectFeature(t.dataset.feature); }
     if (t.dataset.level) { st.level = t.dataset.level; return route(); }
     if (t.dataset.tab) { st.tab = t.dataset.tab; return renderDrawer(); }
     if (t.dataset.step !== undefined && st.mod) { closeDrawer(); return showStepInstant(+t.dataset.step); }
