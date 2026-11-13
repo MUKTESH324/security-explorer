@@ -107,4 +107,13 @@ SE.glossary = [
   ['Attack tree', 'A diagram with the attacker\'s goal at the root and the ways to reach it as AND/OR branches, used to find the most likely attack paths.', ['attack-trees', 'pasta']],
   ['DREAD', 'An older scheme for rating threats (Damage, Reproducibility, Exploitability, Affected users, Discoverability). Rarely recommended today because scores are subjective.', ['threat-modeling']],
   ['Privacy by design', 'Building privacy protections such as data minimisation and private defaults into a system from the start.', ['linddun']],
+  ['Penetration test', 'An authorised, time-boxed attempt to find and prove security weaknesses in a system, ending in a report with fixes.', ['web-pentest', 'mobile-pentest']],
+  ['Rules of engagement', 'The written agreement for a security test: what may be tested, when, how, and who to contact.', ['web-pentest']],
+  ['OWASP WSTG', 'The OWASP Web Security Testing Guide. A checklist of web application test cases, grouped by area such as authentication and input validation.', ['web-pentest']],
+  ['Burp Suite', 'A widely used web security testing tool from PortSwigger, built around an intercepting proxy, with Repeater, Intruder, Scanner and more.', ['burp-proxy', 'burp-workflow']],
+  ['Intercepting proxy', 'A tool that sits between browser and server, recording traffic and letting a tester pause and change requests. Burp Suite and OWASP ZAP are examples.', ['burp-proxy']],
+  ['OAST', 'Out-of-band application security testing. Detecting bugs by watching for requests the target makes to a tester-controlled server, as Burp Collaborator does.', ['burp-workflow', 'ssrf']],
+  ['CVSS', 'Common Vulnerability Scoring System. A standard way to rate how severe a vulnerability is, from 0 to 10.', ['web-pentest']],
+  ['Static analysis', 'Examining code or an app package without running it, to find issues such as hard-coded secrets.', ['mobile-pentest']],
+  ['Dynamic analysis', 'Testing an application while it runs, watching its behaviour, storage and network traffic.', ['mobile-pentest']],
 ].map(([term, def, see]) => ({ term, def, see, id: term.toLowerCase().replace(/\(.*?\)/g, '').trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }));
