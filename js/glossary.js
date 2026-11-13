@@ -93,4 +93,13 @@ SE.glossary = [
   ['MCP (Model Context Protocol)', 'An open standard for connecting AI assistants to external tools and data through MCP servers, using JSON-RPC messages.', ['mcp-protocol', 'mcp-tool-poisoning']],
   ['Tool poisoning', 'Hiding instructions for an AI model inside a tool\'s description or metadata, so the model misuses tools without the user noticing.', ['mcp-tool-poisoning']],
   ['JSON-RPC', 'A simple format for remote procedure calls using JSON messages with a method, parameters and an id. MCP is built on JSON-RPC 2.0.', ['mcp-protocol']],
+  ['Threat modelling', 'A structured way to find what could go wrong in a design by mapping data flows and asking how each could be attacked.', ['threat-modeling']],
+  ['STRIDE', 'A checklist of threat types: Spoofing, Tampering, Repudiation, Information disclosure, Denial of service and Elevation of privilege.', ['threat-modeling']],
+  ['Trust boundary', 'A line in a design where data passes between parts with different levels of trust, such as from the internet into your API.', ['threat-modeling']],
+  ['Data flow diagram (DFD)', 'A simple drawing of processes, data stores, external entities and the data flowing between them, used for threat modelling.', ['threat-modeling']],
+  ['ASVS', 'OWASP Application Security Verification Standard. Security requirements for web apps and APIs, in three levels of assurance.', ['asvs']],
+  ['MASVS', 'OWASP Mobile Application Security Verification Standard. Security requirements for Android and iOS apps, grouped into control areas.', ['masvs']],
+  ['MASTG', 'OWASP Mobile Application Security Testing Guide. Explains how to test mobile apps against each MASVS control.', ['masvs']],
+  ['Keystore / Keychain', 'The secure storage built into Android (Keystore) and iOS (Keychain) for keys and secrets, often backed by hardware.', ['masvs']],
+  ['Certificate pinning', 'Making an app accept only a specific certificate or public key for its server, so a different trusted certificate can\'t be used to intercept traffic.', ['masvs']],
 ].map(([term, def, see]) => ({ term, def, see, id: term.toLowerCase().replace(/\(.*?\)/g, '').trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }));

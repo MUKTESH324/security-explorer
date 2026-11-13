@@ -259,6 +259,23 @@ SE.quizzes = {
     ['Why log prompts, tool calls and decisions?', ['To investigate incidents and improve rules', 'To train ads', 'It\'s not needed'], 0, 'Audit trails show what led to each action.'],
   ],
 
+  /* ---- Secure Development ---- */
+  'threat-modeling': [
+    ['When is threat modelling most useful?', ['During design, before the code is written', 'Only after a breach', 'Only during a pen test'], 0, 'Design flaws are cheapest to fix before they are built.'],
+    ['What does the "T" in STRIDE stand for?', ['Tampering', 'Tracking', 'Timeout'], 0, 'Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege.'],
+    ['Where should you look hardest for threats?', ['Data flows that cross a trust boundary', 'Comments in the code', 'The colour scheme'], 0, 'Crossing from less-trusted to more-trusted is where checks are needed.'],
+  ],
+  asvs: [
+    ['What is OWASP ASVS?', ['A list of security requirements for verifying web apps and APIs', 'A web application firewall', 'A vulnerability scanner'], 0, 'It defines what to build and what to test.'],
+    ['Which ASVS level suits most apps that handle sensitive data?', ['Level 2', 'Level 1', 'Level 3'], 0, 'L1 is the baseline, L3 is for the most critical systems.'],
+    ['What should happen to a failed requirement?', ['It becomes a ticket, gets fixed and gets a test so it stays fixed', 'It is ignored until the next audit', 'It is removed from the standard'], 0, 'ASVS works best as living acceptance criteria.'],
+  ],
+  masvs: [
+    ['Where should a mobile app store a refresh token?', ['In the Android Keystore or iOS Keychain', 'In a plain text file', 'In the app\'s log'], 0, 'Platform key stores are protected by the OS and often by hardware.'],
+    ['What is OWASP MASTG?', ['The testing guide that explains how to test each MASVS control', 'A mobile antivirus', 'An app store'], 0, 'MASVS says what, MASTG says how to test it.'],
+    ['Why must authentication decisions happen on the server?', ['The app runs on a device the user fully controls', 'Servers are faster', 'Phones can\'t do cryptography'], 0, 'A local "logged in" flag can be changed; a server-verified signature can\'t.'],
+  ],
+
   /* ---- Identity & Access ---- */
   'oauth-pkce': [
     ['What does PKCE protect against?', ['A stolen authorization code being redeemed by another app', 'Weak passwords', 'Expired certificates'], 0, 'Without the original code_verifier, an intercepted code can\'t be exchanged for tokens.'],
