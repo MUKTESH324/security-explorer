@@ -126,11 +126,14 @@
     window.scrollTo(0, 0);
   }
 
-  const pageHero = (crumb, title, lead, extra = '') => `
+  const pageHero = (crumb, title, lead, extra = '', art = '') => `
       <header class="page-hero bleed"><div class="wrap page-hero-in">
-        <p class="crumbs-inline">${crumb}</p>
-        <h1>${title}</h1>
-        ${lead ? `<p class="lead">${lead}</p>` : ''}${extra}
+        <div class="page-hero-text">
+          <p class="crumbs-inline">${crumb}</p>
+          <h1>${title}</h1>
+          ${lead ? `<p class="lead">${lead}</p>` : ''}${extra}
+        </div>
+        ${art ? `<div class="hero-art" aria-hidden="true"><span class="ring r1"></span><span class="ring r2"></span><span class="tile"><svg viewBox="0 0 48 48">${icon(art)}</svg></span></div>` : ''}
       </div></header>`;
 
   const siteStats = () => ({
@@ -191,6 +194,7 @@
         <div class="stat"><b>${s.terms}</b><span>Glossary terms</span></div>
       </section>
 
+      <section class="band bleed"><div class="wrap">
       <section class="section features">
         <div class="section-intro">
           <p class="eyebrow">How you learn</p>
@@ -242,15 +246,19 @@
         </div>
       </section>
 
+      </div></section>
+
       <section class="section">
         <div class="section-head"><h2>Learning paths</h2><a href="/paths">See all paths</a></div>
         <div class="grid-3">${SE.paths.slice(0, 3).map(pathCard).join('')}</div>
       </section>
 
+      <section class="band bleed"><div class="wrap">
       <section class="section">
         <div class="section-head"><h2>Browse by topic</h2><a href="/modules">All modules</a></div>
         <div class="topics">${LIVE.map(topicRow).join('')}</div>
       </section>
+      </div></section>
 
       <section class="section faq-section">
         <div class="section-intro"><p class="eyebrow">FAQ</p><h2>Common questions</h2></div>
@@ -317,7 +325,7 @@
     const d = dom && domainOf(dom);
     const list = MODS.filter((m) => (!dom || m.domain === dom) && (st.level === 'all' || m.level === st.level));
     return `
-      ${pageHero(`<a href="/">Home</a> / ${d ? '<a href="/modules">Modules</a> / ' : ''}<span>${d ? esc(d.name) : 'Modules'}</span>`, d ? esc(d.name) : 'All modules', d ? esc(d.blurb) : `${MODS.length} interactive walkthroughs across ${LIVE.length} topics. Pick one, press play.`)}
+      ${pageHero(`<a href="/">Home</a> / ${d ? '<a href="/modules">Modules</a> / ' : ''}<span>${d ? esc(d.name) : 'Modules'}</span>`, d ? esc(d.name) : 'All modules', d ? esc(d.blurb) : `${MODS.length} interactive walkthroughs across ${LIVE.length} topics. Pick one, press play.`, '', d ? d.icon : 'shield')}
       <div class="filters">
         <div class="filter-row" role="group" aria-label="Topic">
           <a class="chip ${!dom ? 'on' : ''}" href="/modules">All topics</a>
@@ -333,7 +341,7 @@
 
   function pathsHTML() {
     return `
-      ${pageHero('<a href="/">Home</a> / <span>Learning paths</span>', 'Learning paths', "Short, ordered sets of modules. Each one builds on the last, so it's worth going top to bottom.")}
+      ${pageHero('<a href="/">Home</a> / <span>Learning paths</span>', 'Learning paths', "Short, ordered sets of modules. Each one builds on the last, so it's worth going top to bottom.", '', 'cert')}
       ${SE.paths.map((p) => {
         const ms = pathMods(p);
         if (!ms.length) return '';
@@ -357,7 +365,7 @@
     const items = SE.glossary.slice().sort((a, b) => a.term.localeCompare(b.term));
     const letters = [...new Set(items.map((g) => g.term[0].toUpperCase()))];
     return `
-      ${pageHero('<a href="/">Home</a> / <span>Glossary</span>', 'Glossary', 'Plain-language definitions of the terms used across the site, with links to the modules that show them in action.')}
+      ${pageHero('<a href="/">Home</a> / <span>Glossary</span>', 'Glossary', 'Plain-language definitions of the terms used across the site, with links to the modules that show them in action.', '', 'doc')}
       <div class="gloss-tools">
         <input id="glossFilter" type="search" placeholder="Filter terms, e.g. TTL" aria-label="Filter glossary terms" autocomplete="off">
         <nav class="gloss-letters" aria-label="Jump to letter">${letters.map((l) => `<a href="#gl-${l}">${l}</a>`).join('')}</nav>
@@ -376,7 +384,7 @@
     const s = siteStats();
     const card = (ico, title, text) => `<article class="info-card"><span class="info-ico"><svg viewBox="0 0 48 48" aria-hidden="true">${icon(ico)}</svg></span><h3>${title}</h3><p>${text}</p></article>`;
     return `
-      ${pageHero('<a href="/">Home</a> / <span>About</span>', 'About Security Explorer', 'A free, open learning site that shows how attacks, protocols and defenses really work, one message at a time.')}
+      ${pageHero('<a href="/">Home</a> / <span>About</span>', 'About Security Explorer', 'A free, open learning site that shows how attacks, protocols and defenses really work, one message at a time.', '', 'shield')}
 
       <section class="section about-split">
         <div>
@@ -487,7 +495,7 @@
     const page = (q.get('page') || '').slice(0, 200);
     contactStarted = Date.now();
     return `
-      ${pageHero('<a href="/">Home</a> / <span>Contact</span>', 'Contact', 'Questions, ideas for new modules, or a mistake you spotted: send a note and it goes straight to the person who runs the site.')}
+      ${pageHero('<a href="/">Home</a> / <span>Contact</span>', 'Contact', 'Questions, ideas for new modules, or a mistake you spotted: send a note and it goes straight to the person who runs the site.', '', 'mail')}
       <div class="contact-layout">
       <article class="prose contact">
         <form id="contactForm" class="contact-form" novalidate>
