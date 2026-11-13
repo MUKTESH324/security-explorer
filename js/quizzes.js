@@ -291,6 +291,28 @@ SE.quizzes = {
     ['Why must authentication decisions happen on the server?', ['The app runs on a device the user fully controls', 'Servers are faster', 'Phones can\'t do cryptography'], 0, 'A local "logged in" flag can be changed; a server-verified signature can\'t.'],
   ],
 
+  /* ---- Penetration Testing ---- */
+  'web-pentest': [
+    ['What must be in place before any pen test starts?', ['Written authorisation with an agreed scope', 'A fast internet connection', 'A list of passwords'], 0, 'Testing without permission is illegal in most countries.'],
+    ['Which guide lists web test cases like ATHN, ATHZ and INPV?', ['OWASP WSTG', 'OWASP MASVS', 'NIST CSF'], 0, 'The Web Security Testing Guide organises tests by category.'],
+    ['What makes a finding useful to developers?', ['Clear impact, reproduction steps and a specific fix', 'A long list of tool output', 'Only a severity number'], 0, 'Reports should be specific and fixable.'],
+  ],
+  'burp-proxy': [
+    ['Why must the test browser trust Burp\'s CA certificate?', ['So Burp can show HTTPS traffic without certificate errors', 'To speed up the browser', 'To bypass logins'], 0, 'Burp signs a certificate for each site with its own CA.'],
+    ['What does setting the target scope do?', ['Limits recording and testing to authorised hosts', 'Blocks all websites', 'Encrypts traffic'], 0, 'It helps avoid testing third parties by accident.'],
+    ['What did changing the price in an intercepted request show?', ['The server correctly used its own price', 'The app was hacked', 'Burp was broken'], 0, 'Servers must never trust client-supplied prices.'],
+  ],
+  'burp-workflow': [
+    ['Which Burp tool is best for editing and resending one request by hand?', ['Repeater', 'Decoder', 'Sequencer'], 0, 'Repeater is the workhorse for confirming findings.'],
+    ['How does Burp Collaborator help confirm SSRF?', ['It records DNS/HTTP requests the target server makes to a unique address', 'It scans ports', 'It decodes Base64'], 0, 'An interaction from the app server proves it fetched the URL.'],
+    ['What should you do with scanner findings before reporting?', ['Confirm them by hand', 'Report them all as-is', 'Ignore them'], 0, 'Scanners produce false positives.'],
+  ],
+  'mobile-pentest': [
+    ['What is the difference between static and dynamic analysis?', ['Static inspects the app package; dynamic watches it run', 'Static is only for iOS', 'They are the same'], 0, 'Good mobile tests use both.'],
+    ['Why might an Android app\'s traffic not appear in Burp?', ['Android 7+ apps ignore user-installed CAs, and the app may pin certificates', 'Burp doesn\'t support Android', 'Phones don\'t use HTTP'], 0, 'A debug build that trusts the test CA is the cleanest fix.'],
+    ['Where are the most serious mobile findings often found?', ['In the backend API', 'In the app icon', 'In the app store listing'], 0, 'The API holds the data; anyone can call it directly.'],
+  ],
+
   /* ---- Identity & Access ---- */
   'oauth-pkce': [
     ['What does PKCE protect against?', ['A stolen authorization code being redeemed by another app', 'Weak passwords', 'Expired certificates'], 0, 'Without the original code_verifier, an intercepted code can\'t be exchanged for tokens.'],
