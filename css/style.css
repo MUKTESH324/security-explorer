@@ -730,3 +730,6 @@ body::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-even
 .hero-scene .topic-art .ta-node svg { stroke: #dbe6ff; }
 .hero-scene .topic-art .ta-node.main rect { fill: color-mix(in srgb, var(--tc) 55%, #0b1630); stroke: color-mix(in srgb, var(--tc) 70%, #fff); }
 .hero-scene .topic-art .ta-node.main svg { stroke: #fff; }
+
+/* Static page text for search engines; the interactive version replaces it. */
+.js #page.prerender { display: none; }
