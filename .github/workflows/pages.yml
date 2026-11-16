@@ -32,3 +32,16 @@ jobs:
           path: .
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  # Tell Bing and other IndexNow search engines about the pages after each deploy.
+  # Never blocks or fails the deploy itself.
+  indexnow:
+    needs: deploy
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Submit sitemap URLs to IndexNow
+        run: python3 scripts/indexnow.py
