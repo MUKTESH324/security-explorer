@@ -119,7 +119,7 @@
   function showPage(html, title, nav) {
     stop(); st.mod = null;
     $('#explorer').hidden = true;
-    const p = $('#page'); p.hidden = false; p.innerHTML = html;
+    const p = $('#page'); p.classList.remove('prerender'); p.hidden = false; p.innerHTML = html;
     document.title = title ? `${title} · ${SITE}` : `${SITE}: interactive security walkthroughs`;
     document.body.dataset.view = 'page';
     setNav(nav);
