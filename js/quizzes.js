@@ -292,6 +292,36 @@ SE.quizzes = {
   ],
 
   /* ---- Penetration Testing ---- */
+  'ethical-hacking': [
+    ['What separates ethical hacking from a crime?', ['Written permission from the system owner', 'Good intentions', 'Using well-known tools'], 0, 'Unauthorised access is illegal whatever the intent.'],
+    ['Which assessment tests whether the defenders can detect a realistic attacker?', ['A red team exercise', 'A vulnerability scan', 'A code review'], 0, 'Red teams are goal-based and test detection and response.'],
+    ['You find real customer data during a test. What do you do?', ['Stop, take the minimum evidence and tell the client immediately', 'Download it all for the report', 'Wait for the final report'], 0, 'Minimise data and escalate critical issues at once.'],
+  ],
+  'recon-mapping': [
+    ['Which public source lists hostnames from every issued TLS certificate?', ['Certificate Transparency logs', 'robots.txt', 'WHOIS only'], 0, 'CT logs record every publicly trusted certificate.'],
+    ['What is the difference between passive and active recon?', ['Passive uses public sources; active sends traffic to the target', 'Passive is illegal', 'There is no difference'], 0, 'Active recon must stay inside the authorised scope.'],
+    ['Why are forgotten hosts like api-old a priority?', ['They are often outdated and unmonitored', 'They are always faster', 'They have no data'], 0, 'Old assets are a favourite way in for attackers.'],
+  ],
+  'api-pentest': [
+    ['What is BOLA?', ['Accessing another user\'s object by changing its ID', 'A slow API', 'A type of encryption'], 0, 'Broken Object Level Authorization is API1 in the OWASP API Top 10.'],
+    ['A customer can call an admin-only refund endpoint. Which category is that?', ['BFLA (function-level authorization)', 'SSRF', 'Injection'], 0, 'API5 Broken Function Level Authorization.'],
+    ['Why test old API versions like /v1?', ['They may still be live without current security fixes', 'They are faster', 'They are required by law'], 0, 'API9 Improper Inventory Management.'],
+  ],
+  'multitenant-pentest': [
+    ['What is the most serious risk in a multi-tenant SaaS?', ['One tenant reaching another tenant\'s data', 'Slow page loads', 'Too many features'], 0, 'Cross-tenant access breaks the core promise of SaaS.'],
+    ['Where should the app take the tenant from?', ['The authenticated session', 'An X-Tenant-ID header', 'The URL'], 0, 'Anything in the request can be changed by the user.'],
+    ['Which is a strong safety net for tenant isolation?', ['Database row-level security', 'A bigger server', 'Hiding tenant IDs'], 0, 'It enforces isolation even if application code slips.'],
+  ],
+  'network-pentest': [
+    ['What does an "assumed breach" internal test start with?', ['A network connection and one ordinary user account', 'Domain admin rights', 'Nothing at all'], 0, 'It models what happens after a successful phishing attack.'],
+    ['What does BloodHound show?', ['Attack paths through Active Directory permissions', 'Open web ports', 'Email headers'], 0, 'It graphs how a user could reach admin rights.'],
+    ['Which fix stops LLMNR-based credential capture?', ['Disable LLMNR and require SMB signing', 'Longer screen savers', 'More VLANs only'], 0, 'Both are standard hardening steps.'],
+  ],
+  'linux-privesc': [
+    ['What usually enables privilege escalation on Linux?', ['Misconfiguration, like broad sudo rules', 'Always a zero-day exploit', 'Slow disks'], 0, 'Convenience shortcuts are the most common cause.'],
+    ['Why was the writable cron script dangerous?', ['Root runs it, and anyone can edit it', 'It used too much CPU', 'It was too long'], 0, 'Whatever is added runs as root.'],
+    ['How should a tester prove a privesc finding?', ['Harmlessly, then clean up', 'By deleting files', 'By leaving a backdoor'], 0, 'Prove impact without causing damage.'],
+  ],
   'web-pentest': [
     ['What must be in place before any pen test starts?', ['Written authorisation with an agreed scope', 'A fast internet connection', 'A list of passwords'], 0, 'Testing without permission is illegal in most countries.'],
     ['Which guide lists web test cases like ATHN, ATHZ and INPV?', ['OWASP WSTG', 'OWASP MASVS', 'NIST CSF'], 0, 'The Web Security Testing Guide organises tests by category.'],
