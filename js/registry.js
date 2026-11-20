@@ -30,6 +30,8 @@ window.SE = (() => {
       blurb: 'WAFs, IDS, SIEM and Zero Trust: how defenders see and stop attacks.' },
     { id: 'soc', name: 'Security Operations (SOC)', short: 'SOC', icon: 'siem',
       blurb: 'How a security operations center works: phishing triage, EDR, incident response, threat hunting and automation.' },
+    { id: 'grc', name: 'Governance, Risk & Compliance', short: 'GRC', icon: 'cert',
+      blurb: 'How security is governed and proven: NIST CSF 2.0, risk assessment, ISO/IEC 27001, SOC 2, GDPR breach response, PCI DSS and third-party risk.' },
     { id: 'ai', name: 'AI & LLM Security', short: 'AI', icon: 'ai',
       blurb: 'How LLM apps, agents and MCP tool connections work, how prompt injection and unsafe output break them, and how to build guardrails.' },
   ];
@@ -70,6 +72,9 @@ window.SE = (() => {
     { id: 'devsecops', level: 'Intermediate', title: 'DevSecOps in practice',
       desc: 'Build security into the pipeline: automated checks, secrets, the software supply chain and keyless deployments.',
       modules: ['secure-pipeline', 'secrets-leak', 'supply-chain', 'cicd-oidc', 'threat-modeling', 'asvs'] },
+    { id: 'grc', level: 'Beginner', title: 'GRC and compliance foundations',
+      desc: 'How security is governed, how risk is assessed and treated, and what ISO 27001, SOC 2, GDPR and PCI DSS actually require.',
+      modules: ['security-governance', 'risk-assessment', 'iso27001', 'soc2', 'gdpr-breach', 'pci-dss', 'vendor-risk', 'threat-modeling'] },
     { id: 'ai-apps', level: 'Intermediate', title: 'Building secure AI apps',
       desc: 'How LLM apps, agents and MCP servers are put together, where prompt injection and unsafe output come in, and how to contain them.',
       modules: ['rag-pipeline', 'prompt-injection', 'indirect-injection', 'llm-output', 'mcp-protocol', 'mcp-tool-poisoning', 'ai-guardrails'] },
