@@ -17,5 +17,14 @@ routes = [
 [[send_email]]
 name = "CONTACT"
 
+# Rate limit per visitor IP: at most 5 requests per 60 seconds.
+[[ratelimits]]
+name = "CONTACT_LIMITER"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 5
+  period = 60
+
 [observability]
 enabled = true

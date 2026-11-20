@@ -17,6 +17,15 @@ export default {
     if (url.pathname !== '/api/contact') return reply(404, { ok: false, error: 'Not found' });
     if (request.method !== 'POST') return reply(405, { ok: false, error: 'Method not allowed' }, { Allow: 'POST' });
     if (request.headers.get('Origin') !== SITE_ORIGIN) return reply(403, { ok: false, error: 'Forbidden' });
+
+    // Per-IP rate limit (Workers Rate Limiting binding). Fails open if the binding is missing.
+    if (env.CONTACT_LIMITER) {
+      const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+      const { success } = await env.CONTACT_LIMITER.limit({ key: ip });
+      if (!success) {
+        return reply(429, { ok: false, error: 'Too many messages. Please wait a minute and try again.' }, { 'Retry-After': '60' });
+      }
+    }
     if (!(request.headers.get('Content-Type') || '').toLowerCase().startsWith('application/json')) {
       return reply(415, { ok: false, error: 'Unsupported content type' });
     }
