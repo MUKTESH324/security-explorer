@@ -306,6 +306,7 @@
     web: ['browser', 'attacker', 'db', 'shield'],
     api: ['api', 'phone', 'gateway', 'server'],
     appsec: ['repo', 'doc', 'cert', 'shield'],
+    devsecops: ['container', 'repo', 'registry', 'shield'],
     pentest: ['shell', 'browser', 'phone', 'doc'],
     network: ['router', 'switch', 'wifi', 'attacker'],
     identity: ['idp', 'user', 'phone', 'lock'],
@@ -316,7 +317,7 @@
     soc: ['siem', 'user', 'workstation', 'c2'],
     ai: ['ai', 'user', 'doc', 'gateway'],
   };
-  const TOPIC_TONES = { protocols: '#3b82f6', web: '#e5484d', api: '#8b5cf6', appsec: '#10b981', pentest: '#f59e0b', network: '#06b6d4',
+  const TOPIC_TONES = { protocols: '#3b82f6', web: '#e5484d', api: '#8b5cf6', appsec: '#10b981', devsecops: '#0d9488', pentest: '#f59e0b', network: '#06b6d4',
     identity: '#6366f1', crypto: '#14b8a6', cloud: '#0ea5e9', threats: '#ef4444', defense: '#22c55e', soc: '#2563eb', ai: '#d946ef' };
   const toneOf = (id) => TOPIC_TONES[id] || '#3b82f6';
   function topicArt(id) {

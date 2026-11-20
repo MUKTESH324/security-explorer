@@ -292,6 +292,55 @@ SE.quizzes = {
   ],
 
   /* ---- Penetration Testing ---- */
+  /* ---- Cloud ---- */
+  'imds-ssrf': [
+    ['What address do cloud VMs use for the metadata service?', ['169.254.169.254', '127.0.0.1', '10.0.0.1'], 0, 'A link-local address reachable only from the instance itself.'],
+    ['Why does IMDSv2 stop most SSRF attacks?', ['It needs a session token from a PUT request with a special header first', 'It encrypts the metadata', 'It blocks all HTTP'], 0, 'Typical SSRF can only send simple GET requests.'],
+    ['What limits the damage if role credentials are stolen anyway?', ['A least-privilege instance role', 'A longer password', 'Turning off logging'], 0, 'The attacker only gets what the role can do.'],
+  ],
+  'public-bucket': [
+    ['Which policy element made the bucket public?', ['"Principal": "*"', '"Effect": "Deny"', '"Version"'], 0, 'A wildcard principal means anyone.'],
+    ['Which account-wide setting prevents public buckets?', ['S3 Block Public Access', 'Versioning', 'Lifecycle rules'], 0, 'It rejects public policies and ACLs.'],
+    ['How should one invoice be shared safely?', ['A short-lived presigned URL after checking ownership', 'Make the bucket public', 'Email the bucket name'], 0, 'The bucket stays private.'],
+  ],
+  'cloud-iam-privesc': [
+    ['Why is iam:PassRole on "*" dangerous?', ['It lets a user attach any role, even admin, to resources they create', 'It deletes users', 'It disables MFA'], 0, 'Code they create then runs with that role.'],
+    ['What caps the permissions of roles a developer creates?', ['A permission boundary', 'A longer session', 'A new region'], 0, 'Boundaries limit maximum permissions.'],
+    ['How should permissions be reviewed?', ['As combinations, looking for escalation paths', 'One at a time only', 'Never'], 0, 'Harmless permissions can combine into admin.'],
+  ],
+  'kubernetes-security': [
+    ['What can a stolen pod service account token be used for?', ['Calling the Kubernetes API with that account\'s permissions', 'Logging into the cloud console', 'Nothing'], 0, 'Limit it with RBAC or don\'t mount it.'],
+    ['What stops one pod from reaching every other pod?', ['Network policies', 'Labels', 'Bigger nodes'], 0, 'Default-deny then allow what\'s needed.'],
+    ['Which setting makes escaping to the host much easier?', ['Running the pod as privileged', 'Using a read-only filesystem', 'Running as non-root'], 0, 'The restricted Pod Security Standard forbids it.'],
+  ],
+  'cloud-detection': [
+    ['Where should audit logs be stored?', ['In a separate, locked-down log account', 'Only in the production account', 'On a developer laptop'], 0, 'So attackers in production can\'t delete them.'],
+    ['Which attempted action should always trigger a critical alert?', ['Stopping CloudTrail logging', 'Reading a public web page', 'Listing your own profile'], 0, 'Attackers try to hide their tracks.'],
+    ['What does a CSPM tool do?', ['Checks cloud settings against a security benchmark', 'Writes application code', 'Replaces backups'], 0, 'It finds risky settings before attackers do.'],
+  ],
+
+  /* ---- DevSecOps ---- */
+  'secure-pipeline': [
+    ['What does SCA check?', ['Third-party dependencies for known vulnerabilities', 'The UI colours', 'Network speed'], 0, 'Software composition analysis.'],
+    ['What is DAST?', ['Testing the running app from the outside', 'Reading source code', 'Scanning Terraform'], 0, 'Dynamic application security testing.'],
+    ['Why fail builds only on high-confidence, high-severity findings?', ['Noisy gates get ignored or bypassed', 'Low issues don\'t exist', 'To save disk'], 0, 'Fast, trusted feedback works best.'],
+  ],
+  'secrets-leak': [
+    ['A cloud key was pushed to a public repo. What do you do first?', ['Revoke the key', 'Delete the commit', 'Make the repo private'], 0, 'Copies already exist; only revocation stops use.'],
+    ['How fast can leaked keys in public repos be abused?', ['Within minutes', 'After a few months', 'Never'], 0, 'Bots watch public commits continuously.'],
+    ['What removes the need for stored CI keys?', ['Short-lived OIDC credentials', 'Longer keys', 'Base64 encoding'], 0, 'No long-lived secret exists to leak.'],
+  ],
+  'supply-chain': [
+    ['What is dependency confusion?', ['A public package with an internal package\'s name gets installed instead', 'Two developers editing the same file', 'A slow download'], 0, 'Higher public versions can win if resolution isn\'t scoped.'],
+    ['What does an SBOM provide?', ['A list of every component in a build', 'A firewall', 'A password'], 0, 'It shows quickly which apps include a bad package.'],
+    ['Why pin CI actions and base images by digest?', ['Tags can be moved to point at different code', 'Digests are shorter', 'It\'s required by Git'], 0, 'A digest always refers to the exact same content.'],
+  ],
+  'cicd-oidc': [
+    ['What does the CI job exchange for cloud credentials?', ['A signed OIDC identity token', 'A stored access key', 'A username and password'], 0, 'AssumeRoleWithWebIdentity verifies the token.'],
+    ['Which trust policy condition is risky?', ['sub matching repo:acme/* or no sub check', 'sub equal to one repo and branch', 'Checking the audience'], 0, 'Wildcards let other repos assume the role.'],
+    ['How long do OIDC-issued cloud credentials typically last?', ['Minutes to an hour', 'Forever', 'One year'], 0, 'Short-lived by design.'],
+  ],
+
   'ethical-hacking': [
     ['What separates ethical hacking from a crime?', ['Written permission from the system owner', 'Good intentions', 'Using well-known tools'], 0, 'Unauthorised access is illegal whatever the intent.'],
     ['Which assessment tests whether the defenders can detect a realistic attacker?', ['A red team exercise', 'A vulnerability scan', 'A code review'], 0, 'Red teams are goal-based and test detection and response.'],
