@@ -319,6 +319,43 @@ SE.quizzes = {
     ['What does a CSPM tool do?', ['Checks cloud settings against a security benchmark', 'Writes application code', 'Replaces backups'], 0, 'It finds risky settings before attackers do.'],
   ],
 
+  /* ---- GRC ---- */
+  'security-governance': [
+    ['Which function did NIST CSF 2.0 add at the centre of the framework?', ['Govern', 'Encrypt', 'Audit'], 0, 'The six functions are Govern, Identify, Protect, Detect, Respond and Recover.'],
+    ['Which document holds measurable requirements like "restore test every quarter"?', ['A standard', 'A policy', 'A guideline'], 0, 'Policies state intent; standards make it specific.'],
+    ['How should a system that can\'t meet a standard yet be handled?', ['A documented exception with an owner and expiry date', 'Ignore it quietly', 'Delete the standard'], 0, 'Exceptions make risk explicit and temporary.'],
+  ],
+  'risk-assessment': [
+    ['What two factors are combined to rate a risk?', ['Likelihood and impact', 'Cost and colour', 'Speed and size'], 0, 'Risk ≈ likelihood × impact.'],
+    ['Buying cyber insurance is which risk treatment?', ['Transfer', 'Avoid', 'Mitigate'], 0, 'Part of the financial impact moves to the insurer.'],
+    ['What is residual risk?', ['The risk that remains after treatment', 'Risk that never existed', 'A type of malware'], 0, 'It should be within the risk appetite.'],
+  ],
+  iso27001: [
+    ['What does the Statement of Applicability record?', ['Which Annex A controls apply, why, and how they are implemented', 'The company\'s revenue', 'Employee holidays'], 0, 'It links risk decisions to controls.'],
+    ['What happens in a stage 2 certification audit?', ['The auditor tests that the ISMS actually operates', 'Only the documents are read', 'The certificate is printed'], 0, 'Stage 1 is documents; stage 2 is operation.'],
+    ['How long is an ISO/IEC 27001 certificate valid?', ['Three years, with yearly surveillance audits', 'Forever', 'One month'], 0, 'Recertification follows after three years.'],
+  ],
+  soc2: [
+    ['What is the difference between SOC 2 Type I and Type II?', ['Type I is a point in time; Type II tests controls over a period', 'Type II is only for banks', 'They are identical'], 0, 'Type II shows controls actually ran.'],
+    ['Which Trust Services Criterion is always included?', ['Security', 'Privacy', 'Processing Integrity'], 0, 'The others are optional.'],
+    ['What is an "exception" in a SOC 2 report?', ['A sampled case where a control didn\'t operate as described', 'A special discount', 'A system outside scope'], 0, 'Customers read exceptions and management responses.'],
+  ],
+  'gdpr-breach': [
+    ['How long does GDPR allow before notifying the supervisory authority of a reportable breach?', ['72 hours from becoming aware', '30 days', '1 year'], 0, 'Article 33; details can follow in phases.'],
+    ['When must affected individuals be told directly?', ['When the breach is likely to cause a high risk to them', 'Never', 'Only if they ask'], 0, 'Article 34.'],
+    ['Which breaches must be recorded internally?', ['All of them, even those not reported', 'Only reported ones', 'None'], 0, 'Accountability requires a breach register.'],
+  ],
+  'pci-dss': [
+    ['What is the most effective way to reduce PCI DSS scope?', ['Keep card numbers out of your systems with hosted fields and tokens', 'Encrypt the logo', 'Add more servers'], 0, 'Systems that never see card data are largely out of scope.'],
+    ['What does the store keep after tokenisation?', ['A token and the last four digits', 'The full card number and security code', 'Nothing about the order'], 0, 'A token is useless outside that provider.'],
+    ['What do PCI DSS v4 requirements 6.4.3 and 11.6.1 address?', ['Scripts and tampering on payment pages', 'Office Wi-Fi', 'Password length'], 0, 'They target web skimming.'],
+  ],
+  'vendor-risk': [
+    ['Why tier vendors?', ['So the depth of review matches the data and access they get', 'To rank them alphabetically', 'To pay them less'], 0, 'High-risk vendors get full reviews.'],
+    ['Which evidence is stronger than a self-completed questionnaire?', ['An independent SOC 2 report or ISO 27001 certificate', 'A marketing brochure', 'A phone call'], 0, 'Independent auditors test the controls.'],
+    ['What should happen when a vendor relationship ends?', ['Revoke access and confirm data deletion', 'Nothing', 'Keep their access just in case'], 0, 'Offboarding closes the loop.'],
+  ],
+
   /* ---- DevSecOps ---- */
   'secure-pipeline': [
     ['What does SCA check?', ['Third-party dependencies for known vulnerabilities', 'The UI colours', 'Network speed'], 0, 'Software composition analysis.'],

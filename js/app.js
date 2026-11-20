@@ -315,10 +315,11 @@
     threats: ['attacker', 'mail', 'c2', 'workstation'],
     defense: ['shield', 'firewall', 'ids', 'siem'],
     soc: ['siem', 'user', 'workstation', 'c2'],
+    grc: ['cert', 'doc', 'user', 'shield'],
     ai: ['ai', 'user', 'doc', 'gateway'],
   };
   const TOPIC_TONES = { protocols: '#3b82f6', web: '#e5484d', api: '#8b5cf6', appsec: '#10b981', devsecops: '#0d9488', pentest: '#f59e0b', network: '#06b6d4',
-    identity: '#6366f1', crypto: '#14b8a6', cloud: '#0ea5e9', threats: '#ef4444', defense: '#22c55e', soc: '#2563eb', ai: '#d946ef' };
+    identity: '#6366f1', crypto: '#14b8a6', cloud: '#0ea5e9', threats: '#ef4444', defense: '#22c55e', soc: '#2563eb', grc: '#a16207', ai: '#d946ef' };
   const toneOf = (id) => TOPIC_TONES[id] || '#3b82f6';
   function topicArt(id) {
     const [c, a, b, d] = TOPIC_SCENES[id] || ['shield', 'client', 'server', 'lock'];
